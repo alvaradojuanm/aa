@@ -1,4 +1,350 @@
+oot@sapl8464:/home/dockeruser/n8n-worker# docker-compose logs -f n8n
+Attaching to n8n
+n8n            | 2025-10-14T22:36:45.900Z | debug | User settings loaded from: /home/node/.n8n/config {"file":"instance-settings.js","function":"loadOrCreate"}
+n8n            | 2025-10-14T22:36:45.990Z | debug | Received CLI command {"execPath":"/usr/local/bin/node","scriptPath":"/usr/local/bin/n8n","args":[],"flags":{},"file":"cli-parser.js","function":"parse"}
+n8n            | 2025-10-14T22:36:45.995Z | error | Last session crashed {"file":"crash-journal.js","function":"init"}
+n8n            | 2025-10-14T22:36:55.999Z | info | Initializing n8n process {"file":"start.js","function":"init"}
+n8n            | 2025-10-14T22:36:56.001Z | debug | Starting main instance in scaling mode {"scopes":["scaling"],"file":"start.js","function":"init"}
+n8n            | 2025-10-14T22:36:56.001Z | debug | Host ID: main-17acdc739da8 {"scopes":["scaling"],"file":"start.js","function":"init"}
+n8n            | 2025-10-14T22:36:56.295Z | debug | Lazy-loading nodes and credentials from n8n-nodes-base {"nodes":483,"credentials":385,"file":"lazy-package-directory-loader.js","function":"loadAll"}
+n8n            | 2025-10-14T22:36:56.313Z | debug | Lazy-loading nodes and credentials from @n8n/n8n-nodes-langchain {"nodes":102,"credentials":23,"file":"lazy-package-directory-loader.js","function":"loadAll"}
+n8n            | 2025-10-14T22:36:56.671Z | info | n8n ready on ::, port 5678 {"file":"abstract-server.js","function":"init"}
+n8n            | 2025-10-14T22:36:56.690Z | debug | Initializing AuthRolesService... {"file":"auth.roles.service.js","function":"init"}
+n8n            | 2025-10-14T22:36:56.701Z | debug | No scopes to update. {"file":"auth.roles.service.js","function":"syncScopes"}
+n8n            | 2025-10-14T22:36:56.721Z | debug | No global roles to update. {"file":"auth.roles.service.js","function":"syncRoles"}
+n8n            | 2025-10-14T22:36:56.721Z | debug | No project roles to update. {"file":"auth.roles.service.js","function":"syncRoles"}
+n8n            | 2025-10-14T22:36:56.721Z | debug | No credential roles to update. {"file":"auth.roles.service.js","function":"syncRoles"}
+n8n            | 2025-10-14T22:36:56.722Z | debug | No workflow roles to update. {"file":"auth.roles.service.js","function":"syncRoles"}
+n8n            | 2025-10-14T22:36:56.722Z | debug | AuthRolesService initialized successfully. {"file":"auth.roles.service.js","function":"init"}
+n8n            | 2025-10-14T22:36:56.722Z | warn | Scaling mode is not officially supported with sqlite. Please use PostgreSQL instead. {"file":"base-command.js","function":"init"}
+n8n            | 2025-10-14T22:36:56.734Z | debug | Started Redis client publisher(n8n) {"scopes":["redis","scaling"],"type":"publisher(n8n)","host":"redis","port":6379,"file":"redis-client.service.js","function":"createRegularClient"}
+n8n            | 2025-10-14T22:36:56.767Z | info | n8n Task Broker ready on 127.0.0.1, port 5679 {"file":"task-broker-server.js","function":"setupHttpServer"}
+n8n            | 2025-10-14T22:36:56.817Z | debug | Started Redis client cache(n8n) {"scopes":["redis","scaling"],"type":"cache(n8n)","host":"redis","port":6379,"file":"redis-client.service.js","function":"createRegularClient"}
+n8n            | 2025-10-14T22:36:56.885Z | warn |
+n8n            | There are deprecations related to your environment variables. Please take the recommended actions to update your configuration:
+n8n            |  - DB_SQLITE_POOL_SIZE -> Running SQLite without a pool of read connections is deprecated. Please set `DB_SQLITE_POOL_SIZE` to a value higher than zero. See: https://docs.n8n.io/hosting/configuration/environment-variables/database/#sqlite
+n8n            |  - N8N_BLOCK_ENV_ACCESS_IN_NODE -> The default value of N8N_BLOCK_ENV_ACCESS_IN_NODE will be changed from false to true in a future version. If you need to access environment variables from the Code Node or from expressions, please set N8N_BLOCK_ENV_ACCESS_IN_NODE=false. Learn more: https://docs.n8n.io/hosting/configuration/environment-variables/security/
+n8n            |  - N8N_GIT_NODE_DISABLE_BARE_REPOS -> Support for bare repositories in the Git Node will be removed in a future version due to security concerns. If you are not using bare repositories in the Git Node, please set N8N_GIT_NODE_DISABLE_BARE_REPOS=true. Learn more: https://docs.n8n.io/hosting/configuration/environment-variables/security/
+n8n            |  {"file":"deprecation.service.js","function":"warn"}
+n8n            | 2025-10-14T22:36:56.893Z | debug | Registered a "reload-license" event handler on License#reload {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:36:56.894Z | debug | Registered a "relay-execution-lifecycle-event" event handler on Push#handleRelayExecutionLifecycleEvent {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:36:56.894Z | debug | Registered a "reload-overwrite-credentials" event handler on CredentialsOverwrites#reloadOverwriteCredentials {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:36:56.894Z | debug | Registered a "clear-test-webhooks" event handler on TestWebhooks#handleClearTestWebhooks {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:36:56.895Z | debug | Registered a "display-workflow-activation" event handler on ActiveWorkflowManager#handleDisplayWorkflowActivation {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:36:56.895Z | debug | Registered a "display-workflow-deactivation" event handler on ActiveWorkflowManager#handleDisplayWorkflowDeactivation {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:36:56.895Z | debug | Registered a "display-workflow-activation-error" event handler on ActiveWorkflowManager#handleDisplayWorkflowActivationError {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:36:56.895Z | debug | Registered a "add-webhooks-triggers-and-pollers" event handler on ActiveWorkflowManager#handleAddWebhooksTriggersAndPollers {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:36:56.896Z | debug | Registered a "remove-triggers-and-pollers" event handler on ActiveWorkflowManager#handleRemoveTriggersAndPollers {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:36:56.896Z | debug | Registered a "restart-event-bus" event handler on MessageEventBus#restart {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:36:56.897Z | debug | Registered a "response-to-get-worker-status" event handler on WorkerStatusService#handleWorkerStatusResponse {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:36:56.897Z | debug | Registered a "community-package-update" event handler on CommunityPackagesService#handleInstallEvent {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:36:56.898Z | debug | Registered a "community-package-install" event handler on CommunityPackagesService#handleInstallEvent {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:36:56.898Z | debug | Registered a "community-package-uninstall" event handler on CommunityPackagesService#handleUninstallEvent {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:36:56.899Z | debug | Started Redis client subscriber(n8n) {"scopes":["redis","scaling"],"type":"subscriber(n8n)","host":"redis","port":6379,"file":"redis-client.service.js","function":"createRegularClient"}
+n8n            | 2025-10-14T22:36:56.920Z | debug | Subscribed to channel n8n.commands {"scopes":["scaling","pubsub"],"file":"subscriber.service.js"}
+n8n            | 2025-10-14T22:36:56.922Z | debug | Subscribed to channel n8n.worker-response {"scopes":["scaling","pubsub"],"file":"subscriber.service.js"}
+n8n            | 2025-10-14T22:36:56.924Z | debug | [license SDK] initializing for deviceFingerprint e534fde58f3e53a0d28cbf6e83277281b82ee134a6f6e38802134cf2c2a5c9a9 {"scopes":["license"],"file":"LicenseManager.js","function":"log"}
+n8n            | 2025-10-14T22:36:56.928Z | info | [license SDK] Skipping renewal on init: license cert is not initialized {"scopes":["license"],"file":"LicenseManager.js","function":"log"}
+n8n            | 2025-10-14T22:36:56.929Z | debug | License initialized {"scopes":["license"],"file":"license.js","function":"init"}
+n8n            | 2025-10-14T22:36:56.929Z | debug | Querying database for waiting executions {"scopes":["waiting-executions"],"file":"wait-tracker.js","function":"getWaitingExecutions"}
+n8n            | 2025-10-14T22:36:56.933Z | debug | Started tracking waiting executions {"scopes":["waiting-executions"],"file":"wait-tracker.js","function":"startTracking"}
+n8n            | 2025-10-14T22:36:56.933Z | debug | Wait tracker init complete {"file":"start.js","function":"init"}
+n8n            | 2025-10-14T22:36:56.933Z | debug | Loading overwrite credentials from static envvar {"file":"credentials-overwrites.js","function":"init"}
+n8n            | 2025-10-14T22:36:56.934Z | debug | Credentials overwrites init complete {"file":"start.js","function":"init"}
+n8n            | 2025-10-14T22:36:56.939Z | debug | Binary data service init complete {"file":"start.js","function":"init"}
+n8n            | 2025-10-14T22:36:56.940Z | debug | Data deduplication service init complete {"file":"start.js","function":"init"}
+n8n            | 2025-10-14T22:36:56.940Z | debug | External hooks init complete {"file":"start.js","function":"init"}
+n8n            | 2025-10-14T22:36:56.941Z | debug | Workflow history init complete {"file":"start.js","function":"init"}
+n8n            | 2025-10-14T22:36:56.951Z | debug | Test runner cleanup complete {"file":"start.js","function":"init"}
+n8n            | 2025-10-14T22:36:58.519Z | debug | Started flushing timer {"scopes":["insights"],"file":"insights-collection.service.js","function":"startFlushingTimer"}
+n8n            | 2025-10-14T22:36:58.519Z | debug | Started compaction timer {"scopes":["insights"],"file":"insights-compaction.service.js","function":"startCompactionTimer"}
+n8n            | 2025-10-14T22:36:58.520Z | debug | Started pruning timer {"scopes":["insights"],"file":"insights-pruning.service.js","function":"startPruningTimer"}
+n8n            | 2025-10-14T22:36:58.520Z | debug | Initialized module "insights" {"file":"module-registry.js","function":"initModules"}
+n8n            | 2025-10-14T22:36:58.521Z | debug | Skipped init for unlicensed module "external-secrets" {"file":"module-registry.js","function":"initModules"}
+n8n            | 2025-10-14T22:36:58.525Z | debug | Initialized module "community-packages" {"file":"module-registry.js","function":"initModules"}
+n8n            | 2025-10-14T22:36:58.548Z | debug | Initialized module "data-table" {"file":"module-registry.js","function":"initModules"}
+n8n            | 2025-10-14T22:36:58.556Z | debug | Starting legacy SQLite execution recovery... {"scopes":["legacy-sqlite-execution-recovery"],"file":"legacy-sqlite-execution-recovery.service.js","function":"cleanupWorkflowExecutions"}
+n8n            | 2025-10-14T22:36:58.558Z | debug | Legacy SQLite execution recovery completed. {"scopes":["legacy-sqlite-execution-recovery"],"file":"legacy-sqlite-execution-recovery.service.js","function":"cleanupWorkflowExecutions"}
+n8n            | 2025-10-14T22:36:59.400Z | debug | Started Redis client client(bull) {"scopes":["redis","scaling"],"type":"client(bull)","host":"redis","port":6379,"file":"redis-client.service.js","function":"createRegularClient"}
+n8n            | 2025-10-14T22:36:59.405Z | debug | Started Redis client subscriber(bull) {"scopes":["redis","scaling"],"type":"subscriber(bull)","host":"redis","port":6379,"file":"redis-client.service.js","function":"createRegularClient"}
+n8n            | 2025-10-14T22:36:59.406Z | debug | Queue setup completed {"scopes":["scaling"],"file":"scaling.service.js","function":"setupQueue"}
+n8n            | 2025-10-14T22:36:59.722Z | debug | Completed queue recovery check, no dangling executions {"scopes":["scaling"],"file":"scaling.service.js","function":"recoverFromQueue"}
+n8n            | 2025-10-14T22:36:59.723Z | debug | Scheduled queue recovery check for next 180 min {"scopes":["scaling"],"file":"scaling.service.js","function":"scheduleQueueRecovery"}
+n8n            | 2025-10-14T22:37:00.533Z | debug | OIDC login is disabled. {"file":"oidc.service.ee.js","function":"init"}
+n8n            | 2025-10-14T22:37:00.540Z | info | Registered runner "JS Task Runner" (KolhcMbttmhfUEAToqjLX)  {"file":"task-broker-ws-server.js","function":"onMessage"}
+n8n            | 2025-10-14T22:37:00.589Z | debug | Registered a "reload-license" event handler on License#reload {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:37:00.589Z | debug | Registered a "relay-execution-lifecycle-event" event handler on Push#handleRelayExecutionLifecycleEvent {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:37:00.590Z | debug | Registered a "reload-overwrite-credentials" event handler on CredentialsOverwrites#reloadOverwriteCredentials {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:37:00.590Z | debug | Registered a "clear-test-webhooks" event handler on TestWebhooks#handleClearTestWebhooks {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:37:00.590Z | debug | Registered a "display-workflow-activation" event handler on ActiveWorkflowManager#handleDisplayWorkflowActivation {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:37:00.590Z | debug | Registered a "display-workflow-deactivation" event handler on ActiveWorkflowManager#handleDisplayWorkflowDeactivation {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:37:00.590Z | debug | Registered a "display-workflow-activation-error" event handler on ActiveWorkflowManager#handleDisplayWorkflowActivationError {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:37:00.591Z | debug | Registered a "add-webhooks-triggers-and-pollers" event handler on ActiveWorkflowManager#handleAddWebhooksTriggersAndPollers {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:37:00.591Z | debug | Registered a "remove-triggers-and-pollers" event handler on ActiveWorkflowManager#handleRemoveTriggersAndPollers {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:37:00.591Z | debug | Registered a "restart-event-bus" event handler on MessageEventBus#restart {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:37:00.591Z | debug | Registered a "response-to-get-worker-status" event handler on WorkerStatusService#handleWorkerStatusResponse {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:37:00.591Z | debug | Registered a "community-package-update" event handler on CommunityPackagesService#handleInstallEvent {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:37:00.592Z | debug | Registered a "community-package-install" event handler on CommunityPackagesService#handleInstallEvent {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:37:00.592Z | debug | Registered a "community-package-uninstall" event handler on CommunityPackagesService#handleUninstallEvent {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:37:00.592Z | debug | Registered a "reload-saml-config" event handler on SamlService#reload {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:37:00.592Z | debug | Registered a "reload-oidc-config" event handler on OidcService#reload {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:37:00.661Z | debug | Initializing event bus... {"file":"message-event-bus.js","function":"initialize"}
+n8n            | 2025-10-14T22:37:00.663Z | debug | Initializing event writer {"file":"message-event-bus.js","function":"initialize"}
+n8n            | 2025-10-14T22:37:00.667Z | debug | Checking for unsent event messages {"file":"message-event-bus.js","function":"initialize"}
+n8n            | 2025-10-14T22:37:00.729Z | debug | Start logging into /home/node/.n8n/n8nEventLog.log  {"file":"message-event-bus.js","function":"initialize"}
+n8n            | 2025-10-14T22:37:00.730Z | debug | MessageEventBus initialized {"file":"message-event-bus.js","function":"initialize"}
+n8n            | 2025-10-14T22:37:00.733Z | info | Version: 1.115.3 {"file":"abstract-server.js","function":"start"}
+n8n            | 2025-10-14T22:37:00.733Z | debug | Server ID: main-17acdc739da8 {"file":"server.js","function":"start"}
+n8n            | 2025-10-14T22:37:00.738Z | debug | Soft-deletion every 60 minutes {"scopes":["pruning"],"file":"executions-pruning.service.js","function":"scheduleRollingSoftDeletions"}
+n8n            | 2025-10-14T22:37:00.739Z | debug | Hard-deletion in next 15 minutes {"scopes":["pruning"],"file":"executions-pruning.service.js","function":"scheduleNextHardDeletion"}
+n8n            | 2025-10-14T22:37:00.739Z | debug | Started pruning timers {"scopes":["pruning"],"file":"executions-pruning.service.js","function":"startPruning"}
+n8n            | 2025-10-14T22:37:00.744Z | error | Cannot find module 'global-agent/bootstrap'
+n8n            | Require stack:
+n8n            | - internal/preload {"file":"error-reporter.js","function":"defaultReport"}
+n8n            | 2025-10-14T22:37:00.749Z [Rudder] debug: in flush
+n8n            | 2025-10-14T22:37:00.753Z [Rudder] debug: no existing flush timer, creating new one
+n8n            | 2025-10-14T22:37:00.772Z | info |
+n8n            | Editor is now accessible via:
+n8n            | http://localhost:5678 {"file":"base-command.js","function":"log"}
+n8n            | (node:1) Warning: Setting the NODE_TLS_REJECT_UNAUTHORIZED environment variable to '0' makes TLS connections and HTTPS requests insecure by disabling certificate verification.
+n8n            | (Use `node --trace-warnings ...` to show where the warning was created)
+n8n            | 2025-10-14T22:37:10.754Z [Rudder] debug: in flush
+n8n            | 2025-10-14T22:37:10.754Z [Rudder] debug: cancelling existing flushTimer...
+n8n            | 2025-10-14T22:37:12.877Z | debug | Skipped browserId check on /rest/push {"file":"auth.service.js","function":"resolveJwt"}
+n8n            | 2025-10-14T22:37:12.881Z | debug | Add editor-UI session {"pushRef":"j1hsor5v9h","file":"abstract.push.js","function":"add"}
+^CERROR: Aborting.
+root@sapl8464:/home/dockeruser/n8n-worker# docker-compose logs -f n8n
+Attaching to n8n
+n8n            | 2025-10-14T22:36:45.900Z | debug | User settings loaded from: /home/node/.n8n/config {"file":"instance-settings.js","function":"loadOrCreate"}
+n8n            | 2025-10-14T22:36:45.990Z | debug | Received CLI command {"execPath":"/usr/local/bin/node","scriptPath":"/usr/local/bin/n8n","args":[],"flags":{},"file":"cli-parser.js","function":"parse"}
+n8n            | 2025-10-14T22:36:45.995Z | error | Last session crashed {"file":"crash-journal.js","function":"init"}
+n8n            | 2025-10-14T22:36:55.999Z | info | Initializing n8n process {"file":"start.js","function":"init"}
+n8n            | 2025-10-14T22:36:56.001Z | debug | Starting main instance in scaling mode {"scopes":["scaling"],"file":"start.js","function":"init"}
+n8n            | 2025-10-14T22:36:56.001Z | debug | Host ID: main-17acdc739da8 {"scopes":["scaling"],"file":"start.js","function":"init"}
+n8n            | 2025-10-14T22:36:56.295Z | debug | Lazy-loading nodes and credentials from n8n-nodes-base {"nodes":483,"credentials":385,"file":"lazy-package-directory-loader.js","function":"loadAll"}
+n8n            | 2025-10-14T22:36:56.313Z | debug | Lazy-loading nodes and credentials from @n8n/n8n-nodes-langchain {"nodes":102,"credentials":23,"file":"lazy-package-directory-loader.js","function":"loadAll"}
+n8n            | 2025-10-14T22:36:56.671Z | info | n8n ready on ::, port 5678 {"file":"abstract-server.js","function":"init"}
+n8n            | 2025-10-14T22:36:56.690Z | debug | Initializing AuthRolesService... {"file":"auth.roles.service.js","function":"init"}
+n8n            | 2025-10-14T22:36:56.701Z | debug | No scopes to update. {"file":"auth.roles.service.js","function":"syncScopes"}
+n8n            | 2025-10-14T22:36:56.721Z | debug | No global roles to update. {"file":"auth.roles.service.js","function":"syncRoles"}
+n8n            | 2025-10-14T22:36:56.721Z | debug | No project roles to update. {"file":"auth.roles.service.js","function":"syncRoles"}
+n8n            | 2025-10-14T22:36:56.721Z | debug | No credential roles to update. {"file":"auth.roles.service.js","function":"syncRoles"}
+n8n            | 2025-10-14T22:36:56.722Z | debug | No workflow roles to update. {"file":"auth.roles.service.js","function":"syncRoles"}
+n8n            | 2025-10-14T22:36:56.722Z | debug | AuthRolesService initialized successfully. {"file":"auth.roles.service.js","function":"init"}
+n8n            | 2025-10-14T22:36:56.722Z | warn | Scaling mode is not officially supported with sqlite. Please use PostgreSQL instead. {"file":"base-command.js","function":"init"}
+n8n            | 2025-10-14T22:36:56.734Z | debug | Started Redis client publisher(n8n) {"scopes":["redis","scaling"],"type":"publisher(n8n)","host":"redis","port":6379,"file":"redis-client.service.js","function":"createRegularClient"}
+n8n            | 2025-10-14T22:36:56.767Z | info | n8n Task Broker ready on 127.0.0.1, port 5679 {"file":"task-broker-server.js","function":"setupHttpServer"}
+n8n            | 2025-10-14T22:36:56.817Z | debug | Started Redis client cache(n8n) {"scopes":["redis","scaling"],"type":"cache(n8n)","host":"redis","port":6379,"file":"redis-client.service.js","function":"createRegularClient"}
+n8n            | 2025-10-14T22:36:56.885Z | warn |
+n8n            | There are deprecations related to your environment variables. Please take the recommended actions to update your configuration:
+n8n            |  - DB_SQLITE_POOL_SIZE -> Running SQLite without a pool of read connections is deprecated. Please set `DB_SQLITE_POOL_SIZE` to a value higher than zero. See: https://docs.n8n.io/hosting/configuration/environment-variables/database/#sqlite
+n8n            |  - N8N_BLOCK_ENV_ACCESS_IN_NODE -> The default value of N8N_BLOCK_ENV_ACCESS_IN_NODE will be changed from false to true in a future version. If you need to access environment variables from the Code Node or from expressions, please set N8N_BLOCK_ENV_ACCESS_IN_NODE=false. Learn more: https://docs.n8n.io/hosting/configuration/environment-variables/security/
+n8n            |  - N8N_GIT_NODE_DISABLE_BARE_REPOS -> Support for bare repositories in the Git Node will be removed in a future version due to security concerns. If you are not using bare repositories in the Git Node, please set N8N_GIT_NODE_DISABLE_BARE_REPOS=true. Learn more: https://docs.n8n.io/hosting/configuration/environment-variables/security/
+n8n            |  {"file":"deprecation.service.js","function":"warn"}
+n8n            | 2025-10-14T22:36:56.893Z | debug | Registered a "reload-license" event handler on License#reload {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:36:56.894Z | debug | Registered a "relay-execution-lifecycle-event" event handler on Push#handleRelayExecutionLifecycleEvent {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:36:56.894Z | debug | Registered a "reload-overwrite-credentials" event handler on CredentialsOverwrites#reloadOverwriteCredentials {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:36:56.894Z | debug | Registered a "clear-test-webhooks" event handler on TestWebhooks#handleClearTestWebhooks {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:36:56.895Z | debug | Registered a "display-workflow-activation" event handler on ActiveWorkflowManager#handleDisplayWorkflowActivation {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:36:56.895Z | debug | Registered a "display-workflow-deactivation" event handler on ActiveWorkflowManager#handleDisplayWorkflowDeactivation {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:36:56.895Z | debug | Registered a "display-workflow-activation-error" event handler on ActiveWorkflowManager#handleDisplayWorkflowActivationError {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:36:56.895Z | debug | Registered a "add-webhooks-triggers-and-pollers" event handler on ActiveWorkflowManager#handleAddWebhooksTriggersAndPollers {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:36:56.896Z | debug | Registered a "remove-triggers-and-pollers" event handler on ActiveWorkflowManager#handleRemoveTriggersAndPollers {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:36:56.896Z | debug | Registered a "restart-event-bus" event handler on MessageEventBus#restart {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:36:56.897Z | debug | Registered a "response-to-get-worker-status" event handler on WorkerStatusService#handleWorkerStatusResponse {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:36:56.897Z | debug | Registered a "community-package-update" event handler on CommunityPackagesService#handleInstallEvent {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:36:56.898Z | debug | Registered a "community-package-install" event handler on CommunityPackagesService#handleInstallEvent {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:36:56.898Z | debug | Registered a "community-package-uninstall" event handler on CommunityPackagesService#handleUninstallEvent {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:36:56.899Z | debug | Started Redis client subscriber(n8n) {"scopes":["redis","scaling"],"type":"subscriber(n8n)","host":"redis","port":6379,"file":"redis-client.service.js","function":"createRegularClient"}
+n8n            | 2025-10-14T22:36:56.920Z | debug | Subscribed to channel n8n.commands {"scopes":["scaling","pubsub"],"file":"subscriber.service.js"}
+n8n            | 2025-10-14T22:36:56.922Z | debug | Subscribed to channel n8n.worker-response {"scopes":["scaling","pubsub"],"file":"subscriber.service.js"}
+n8n            | 2025-10-14T22:36:56.924Z | debug | [license SDK] initializing for deviceFingerprint e534fde58f3e53a0d28cbf6e83277281b82ee134a6f6e38802134cf2c2a5c9a9 {"scopes":["license"],"file":"LicenseManager.js","function":"log"}
+n8n            | 2025-10-14T22:36:56.928Z | info | [license SDK] Skipping renewal on init: license cert is not initialized {"scopes":["license"],"file":"LicenseManager.js","function":"log"}
+n8n            | 2025-10-14T22:36:56.929Z | debug | License initialized {"scopes":["license"],"file":"license.js","function":"init"}
+n8n            | 2025-10-14T22:36:56.929Z | debug | Querying database for waiting executions {"scopes":["waiting-executions"],"file":"wait-tracker.js","function":"getWaitingExecutions"}
+n8n            | 2025-10-14T22:36:56.933Z | debug | Started tracking waiting executions {"scopes":["waiting-executions"],"file":"wait-tracker.js","function":"startTracking"}
+n8n            | 2025-10-14T22:36:56.933Z | debug | Wait tracker init complete {"file":"start.js","function":"init"}
+n8n            | 2025-10-14T22:36:56.933Z | debug | Loading overwrite credentials from static envvar {"file":"credentials-overwrites.js","function":"init"}
+n8n            | 2025-10-14T22:36:56.934Z | debug | Credentials overwrites init complete {"file":"start.js","function":"init"}
+n8n            | 2025-10-14T22:36:56.939Z | debug | Binary data service init complete {"file":"start.js","function":"init"}
+n8n            | 2025-10-14T22:36:56.940Z | debug | Data deduplication service init complete {"file":"start.js","function":"init"}
+n8n            | 2025-10-14T22:36:56.940Z | debug | External hooks init complete {"file":"start.js","function":"init"}
+n8n            | 2025-10-14T22:36:56.941Z | debug | Workflow history init complete {"file":"start.js","function":"init"}
+n8n            | 2025-10-14T22:36:56.951Z | debug | Test runner cleanup complete {"file":"start.js","function":"init"}
+n8n            | 2025-10-14T22:36:58.519Z | debug | Started flushing timer {"scopes":["insights"],"file":"insights-collection.service.js","function":"startFlushingTimer"}
+n8n            | 2025-10-14T22:36:58.519Z | debug | Started compaction timer {"scopes":["insights"],"file":"insights-compaction.service.js","function":"startCompactionTimer"}
+n8n            | 2025-10-14T22:36:58.520Z | debug | Started pruning timer {"scopes":["insights"],"file":"insights-pruning.service.js","function":"startPruningTimer"}
+n8n            | 2025-10-14T22:36:58.520Z | debug | Initialized module "insights" {"file":"module-registry.js","function":"initModules"}
+n8n            | 2025-10-14T22:36:58.521Z | debug | Skipped init for unlicensed module "external-secrets" {"file":"module-registry.js","function":"initModules"}
+n8n            | 2025-10-14T22:36:58.525Z | debug | Initialized module "community-packages" {"file":"module-registry.js","function":"initModules"}
+n8n            | 2025-10-14T22:36:58.548Z | debug | Initialized module "data-table" {"file":"module-registry.js","function":"initModules"}
+n8n            | 2025-10-14T22:36:58.556Z | debug | Starting legacy SQLite execution recovery... {"scopes":["legacy-sqlite-execution-recovery"],"file":"legacy-sqlite-execution-recovery.service.js","function":"cleanupWorkflowExecutions"}
+n8n            | 2025-10-14T22:36:58.558Z | debug | Legacy SQLite execution recovery completed. {"scopes":["legacy-sqlite-execution-recovery"],"file":"legacy-sqlite-execution-recovery.service.js","function":"cleanupWorkflowExecutions"}
+n8n            | 2025-10-14T22:36:59.400Z | debug | Started Redis client client(bull) {"scopes":["redis","scaling"],"type":"client(bull)","host":"redis","port":6379,"file":"redis-client.service.js","function":"createRegularClient"}
+n8n            | 2025-10-14T22:36:59.405Z | debug | Started Redis client subscriber(bull) {"scopes":["redis","scaling"],"type":"subscriber(bull)","host":"redis","port":6379,"file":"redis-client.service.js","function":"createRegularClient"}
+n8n            | 2025-10-14T22:36:59.406Z | debug | Queue setup completed {"scopes":["scaling"],"file":"scaling.service.js","function":"setupQueue"}
+n8n            | 2025-10-14T22:36:59.722Z | debug | Completed queue recovery check, no dangling executions {"scopes":["scaling"],"file":"scaling.service.js","function":"recoverFromQueue"}
+n8n            | 2025-10-14T22:36:59.723Z | debug | Scheduled queue recovery check for next 180 min {"scopes":["scaling"],"file":"scaling.service.js","function":"scheduleQueueRecovery"}
+n8n            | 2025-10-14T22:37:00.533Z | debug | OIDC login is disabled. {"file":"oidc.service.ee.js","function":"init"}
+n8n            | 2025-10-14T22:37:00.540Z | info | Registered runner "JS Task Runner" (KolhcMbttmhfUEAToqjLX)  {"file":"task-broker-ws-server.js","function":"onMessage"}
+n8n            | 2025-10-14T22:37:00.589Z | debug | Registered a "reload-license" event handler on License#reload {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:37:00.589Z | debug | Registered a "relay-execution-lifecycle-event" event handler on Push#handleRelayExecutionLifecycleEvent {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:37:00.590Z | debug | Registered a "reload-overwrite-credentials" event handler on CredentialsOverwrites#reloadOverwriteCredentials {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:37:00.590Z | debug | Registered a "clear-test-webhooks" event handler on TestWebhooks#handleClearTestWebhooks {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:37:00.590Z | debug | Registered a "display-workflow-activation" event handler on ActiveWorkflowManager#handleDisplayWorkflowActivation {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:37:00.590Z | debug | Registered a "display-workflow-deactivation" event handler on ActiveWorkflowManager#handleDisplayWorkflowDeactivation {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:37:00.590Z | debug | Registered a "display-workflow-activation-error" event handler on ActiveWorkflowManager#handleDisplayWorkflowActivationError {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:37:00.591Z | debug | Registered a "add-webhooks-triggers-and-pollers" event handler on ActiveWorkflowManager#handleAddWebhooksTriggersAndPollers {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:37:00.591Z | debug | Registered a "remove-triggers-and-pollers" event handler on ActiveWorkflowManager#handleRemoveTriggersAndPollers {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:37:00.591Z | debug | Registered a "restart-event-bus" event handler on MessageEventBus#restart {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:37:00.591Z | debug | Registered a "response-to-get-worker-status" event handler on WorkerStatusService#handleWorkerStatusResponse {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:37:00.591Z | debug | Registered a "community-package-update" event handler on CommunityPackagesService#handleInstallEvent {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:37:00.592Z | debug | Registered a "community-package-install" event handler on CommunityPackagesService#handleInstallEvent {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:37:00.592Z | debug | Registered a "community-package-uninstall" event handler on CommunityPackagesService#handleUninstallEvent {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:37:00.592Z | debug | Registered a "reload-saml-config" event handler on SamlService#reload {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:37:00.592Z | debug | Registered a "reload-oidc-config" event handler on OidcService#reload {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:37:00.661Z | debug | Initializing event bus... {"file":"message-event-bus.js","function":"initialize"}
+n8n            | 2025-10-14T22:37:00.663Z | debug | Initializing event writer {"file":"message-event-bus.js","function":"initialize"}
+n8n            | 2025-10-14T22:37:00.667Z | debug | Checking for unsent event messages {"file":"message-event-bus.js","function":"initialize"}
+n8n            | 2025-10-14T22:37:00.729Z | debug | Start logging into /home/node/.n8n/n8nEventLog.log  {"file":"message-event-bus.js","function":"initialize"}
+n8n            | 2025-10-14T22:37:00.730Z | debug | MessageEventBus initialized {"file":"message-event-bus.js","function":"initialize"}
+n8n            | 2025-10-14T22:37:00.733Z | info | Version: 1.115.3 {"file":"abstract-server.js","function":"start"}
+n8n            | 2025-10-14T22:37:00.733Z | debug | Server ID: main-17acdc739da8 {"file":"server.js","function":"start"}
+n8n            | 2025-10-14T22:37:00.738Z | debug | Soft-deletion every 60 minutes {"scopes":["pruning"],"file":"executions-pruning.service.js","function":"scheduleRollingSoftDeletions"}
+n8n            | 2025-10-14T22:37:00.739Z | debug | Hard-deletion in next 15 minutes {"scopes":["pruning"],"file":"executions-pruning.service.js","function":"scheduleNextHardDeletion"}
+n8n            | 2025-10-14T22:37:00.739Z | debug | Started pruning timers {"scopes":["pruning"],"file":"executions-pruning.service.js","function":"startPruning"}
+n8n            | 2025-10-14T22:37:00.744Z | error | Cannot find module 'global-agent/bootstrap'
+n8n            | Require stack:
+n8n            | - internal/preload {"file":"error-reporter.js","function":"defaultReport"}
+n8n            | 2025-10-14T22:37:00.749Z [Rudder] debug: in flush
+n8n            | 2025-10-14T22:37:00.753Z [Rudder] debug: no existing flush timer, creating new one
+n8n            | 2025-10-14T22:37:00.772Z | info |
+n8n            | Editor is now accessible via:
+n8n            | http://localhost:5678 {"file":"base-command.js","function":"log"}
+n8n            | (node:1) Warning: Setting the NODE_TLS_REJECT_UNAUTHORIZED environment variable to '0' makes TLS connections and HTTPS requests insecure by disabling certificate verification.
+n8n            | (Use `node --trace-warnings ...` to show where the warning was created)
+n8n            | 2025-10-14T22:37:10.754Z [Rudder] debug: in flush
+n8n            | 2025-10-14T22:37:10.754Z [Rudder] debug: cancelling existing flushTimer...
+n8n            | 2025-10-14T22:37:12.877Z | debug | Skipped browserId check on /rest/push {"file":"auth.service.js","function":"resolveJwt"}
+n8n            | 2025-10-14T22:37:12.881Z | debug | Add editor-UI session {"pushRef":"j1hsor5v9h","file":"abstract.push.js","function":"add"}
+n8n            | 2025-10-14T22:37:56.930Z | debug | Querying database for waiting executions {"scopes":["waiting-executions"],"file":"wait-tracker.js","function":"getWaitingExecutions"}
+n8n            | 2025-10-14T22:38:53.966Z | debug | Removed editor-UI session {"pushRef":"j1hsor5v9h","file":"abstract.push.js","function":"remove"}
+n8n            | 2025-10-14T22:38:54.445Z [Rudder] debug: no existing flush timer, creating new one
+n8n            | 2025-10-14T22:38:56.930Z | debug | Querying database for waiting executions {"scopes":["waiting-executions"],"file":"wait-tracker.js","function":"getWaitingExecutions"}
+n8n            | Error fetching feature flags Error [PostHogFetchNetworkError]: Network error while fetching PostHog
+n8n            |     at new PostHogFetchNetworkError (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/posthog-node@3.2.1/node_modules/posthog-core/src/index.ts:41:5)
+n8n            |     at PostHog.<anonymous> (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/posthog-node@3.2.1/node_modules/posthog-core/src/index.ts:546:17)
+n8n            |     at step (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/posthog-node@3.2.1/node_modules/node_modules/tslib/tslib.es6.js:102:23)
+n8n            |     at Object.throw (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/posthog-node@3.2.1/node_modules/node_modules/tslib/tslib.es6.js:83:53)
+n8n            |     at rejected (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/posthog-node@3.2.1/node_modules/node_modules/tslib/tslib.es6.js:74:65)
+n8n            |     at processTicksAndRejections (node:internal/process/task_queues:105:5) {
+n8n            |   error: TypeError: fetch failed
+n8n            |       at node:internal/deps/undici/undici:13510:13
+n8n            |       at processTicksAndRejections (node:internal/process/task_queues:105:5) {
+n8n            |     [cause]: Error: connect ECONNREFUSED 172.67.68.102:443
+n8n            |         at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1637:16) {
+n8n            |       errno: -111,
+n8n            |       code: 'ECONNREFUSED',
+n8n            |       syscall: 'connect',
+n8n            |       address: '172.67.68.102',
+n8n            |       port: 443
+n8n            |     }
+n8n            |   },
+n8n            |   [cause]: TypeError: fetch failed
+n8n            |       at node:internal/deps/undici/undici:13510:13
+n8n            |       at processTicksAndRejections (node:internal/process/task_queues:105:5) {
+n8n            |     [cause]: Error: connect ECONNREFUSED 172.67.68.102:443
+n8n            |         at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1637:16) {
+n8n            |       errno: -111,
+n8n            |       code: 'ECONNREFUSED',
+n8n            |       syscall: 'connect',
+n8n            |       address: '172.67.68.102',
+n8n            |       port: 443
+n8n            |     }
+n8n            |   }
+n8n            | }
+n8n            | 2025-10-14T22:39:04.445Z [Rudder] debug: in flush
+n8n            | 2025-10-14T22:39:04.445Z [Rudder] debug: cancelling existing flushTimer...
+n8n            | 2025-10-14T22:39:06.637Z | debug | Skipped browserId check on /rest/push {"file":"auth.service.js","function":"resolveJwt"}
+n8n            | 2025-10-14T22:39:06.638Z | debug | Add editor-UI session {"pushRef":"7rsiuxmjoz","file":"abstract.push.js","function":"add"}
+n8n            | 2025-10-14T22:39:17.261Z | debug | Execution added {"executionId":"5","file":"active-executions.js","function":"add"}
+n8n            | 2025-10-14T22:39:17.270Z | info | Enqueued execution 5 (job 5) {"scopes":["scaling"],"executionId":"5","jobId":"5","file":"scaling.service.js","function":"addJob"}
+n8n            | 2025-10-14T22:39:18.146Z | debug | Received pubsub msg: relay-execution-lifecycle-event (executionStarted) {"scopes":["scaling","pubsub"],"msg":"relay-execution-lifecycle-event","channel":"n8n.commands","type":"executionStarted","executionId":"5","file":"subscriber.service.js","function":"parseMessage"}
+n8n            | 2025-10-14T22:39:18.147Z | debug | Pushed to frontend: executionStarted {"dataType":"executionStarted","pushRefs":"7rsiuxmjoz","file":"abstract.push.js","function":"sendTo"}
+n8n            | 2025-10-14T22:39:18.149Z | debug | Received pubsub msg: relay-execution-lifecycle-event (nodeExecuteBefore) {"scopes":["scaling","pubsub"],"msg":"relay-execution-lifecycle-event","channel":"n8n.commands","type":"nodeExecuteBefore","executionId":"5","file":"subscriber.service.js","function":"parseMessage"}
+n8n            | 2025-10-14T22:39:18.149Z | debug | Pushed to frontend: nodeExecuteBefore {"dataType":"nodeExecuteBefore","pushRefs":"7rsiuxmjoz","file":"abstract.push.js","function":"sendTo"}
+n8n            | 2025-10-14T22:39:18.368Z | debug | Received pubsub msg: relay-execution-lifecycle-event (nodeExecuteBefore) {"scopes":["scaling","pubsub"],"msg":"relay-execution-lifecycle-event","channel":"n8n.commands","type":"nodeExecuteBefore","executionId":"5","file":"subscriber.service.js","function":"parseMessage"}
+n8n            | 2025-10-14T22:39:18.368Z | debug | Pushed to frontend: nodeExecuteBefore {"dataType":"nodeExecuteBefore","pushRefs":"7rsiuxmjoz","file":"abstract.push.js","function":"sendTo"}
+n8n            | 2025-10-14T22:39:18.369Z | debug | Received pubsub msg: relay-execution-lifecycle-event (nodeExecuteAfter) {"scopes":["scaling","pubsub"],"msg":"relay-execution-lifecycle-event","channel":"n8n.commands","type":"nodeExecuteAfter","executionId":"5","file":"subscriber.service.js","function":"parseMessage"}
+n8n            | 2025-10-14T22:39:18.370Z | debug | Pushed to frontend: nodeExecuteAfter {"dataType":"nodeExecuteAfter","pushRefs":"7rsiuxmjoz","file":"abstract.push.js","function":"sendTo"}
+n8n            | 2025-10-14T22:39:18.370Z | debug | Received pubsub msg: relay-execution-lifecycle-event (nodeExecuteAfterData) {"scopes":["scaling","pubsub"],"msg":"relay-execution-lifecycle-event","channel":"n8n.commands","type":"nodeExecuteAfterData","executionId":"5","file":"subscriber.service.js","function":"parseMessage"}
+n8n            | 2025-10-14T22:39:18.370Z | debug | Pushed to frontend: nodeExecuteAfterData {"dataType":"nodeExecuteAfterData","pushRefs":"7rsiuxmjoz","file":"abstract.push.js","function":"sendTo"}
+n8n            | 2025-10-14T22:39:19.618Z | debug | Received pubsub msg: relay-execution-lifecycle-event (nodeExecuteBefore) {"scopes":["scaling","pubsub"],"msg":"relay-execution-lifecycle-event","channel":"n8n.commands","type":"nodeExecuteBefore","executionId":"5","file":"subscriber.service.js","function":"parseMessage"}
+n8n            | 2025-10-14T22:39:19.619Z | debug | Pushed to frontend: nodeExecuteBefore {"dataType":"nodeExecuteBefore","pushRefs":"7rsiuxmjoz","file":"abstract.push.js","function":"sendTo"}
+n8n            | 2025-10-14T22:39:56.930Z | debug | Querying database for waiting executions {"scopes":["waiting-executions"],"file":"wait-tracker.js","function":"getWaitingExecutions"}
+n8n            | 2025-10-14T22:40:56.930Z | debug | Querying database for waiting executions {"scopes":["waiting-executions"],"file":"wait-tracker.js","function":"getWaitingExecutions"}
+n8n            | 2025-10-14T22:41:05.817Z | debug | Received pubsub msg: relay-execution-lifecycle-event (nodeExecuteAfter) {"scopes":["scaling","pubsub"],"msg":"relay-execution-lifecycle-event","channel":"n8n.commands","type":"nodeExecuteAfter","executionId":"5","file":"subscriber.service.js","function":"parseMessage"}
+n8n            | 2025-10-14T22:41:05.818Z | debug | Pushed to frontend: nodeExecuteAfter {"dataType":"nodeExecuteAfter","pushRefs":"7rsiuxmjoz","file":"abstract.push.js","function":"sendTo"}
+n8n            | 2025-10-14T22:41:05.819Z | debug | Received pubsub msg: relay-execution-lifecycle-event (nodeExecuteAfterData) {"scopes":["scaling","pubsub"],"msg":"relay-execution-lifecycle-event","channel":"n8n.commands","type":"nodeExecuteAfterData","executionId":"5","file":"subscriber.service.js","function":"parseMessage"}
+n8n            | 2025-10-14T22:41:05.819Z | debug | Pushed to frontend: nodeExecuteAfterData {"dataType":"nodeExecuteAfterData","pushRefs":"7rsiuxmjoz","file":"abstract.push.js","function":"sendTo"}
+n8n            | 2025-10-14T22:41:05.825Z | debug | Received pubsub msg: relay-execution-lifecycle-event (nodeExecuteAfter) {"scopes":["scaling","pubsub"],"msg":"relay-execution-lifecycle-event","channel":"n8n.commands","type":"nodeExecuteAfter","executionId":"5","file":"subscriber.service.js","function":"parseMessage"}
+n8n            | 2025-10-14T22:41:05.826Z | debug | Pushed to frontend: nodeExecuteAfter {"dataType":"nodeExecuteAfter","pushRefs":"7rsiuxmjoz","file":"abstract.push.js","function":"sendTo"}
+n8n            | 2025-10-14T22:41:05.827Z | debug | Received pubsub msg: relay-execution-lifecycle-event (nodeExecuteAfterData) {"scopes":["scaling","pubsub"],"msg":"relay-execution-lifecycle-event","channel":"n8n.commands","type":"nodeExecuteAfterData","executionId":"5","file":"subscriber.service.js","function":"parseMessage"}
+n8n            | 2025-10-14T22:41:05.827Z | debug | Pushed to frontend: nodeExecuteAfterData {"dataType":"nodeExecuteAfterData","pushRefs":"7rsiuxmjoz","file":"abstract.push.js","function":"sendTo"}
+n8n            | 2025-10-14T22:41:05.874Z | debug | Received pubsub msg: relay-execution-lifecycle-event (executionFinished) {"scopes":["scaling","pubsub"],"msg":"relay-execution-lifecycle-event","channel":"n8n.commands","type":"executionFinished","executionId":"5","file":"subscriber.service.js","function":"parseMessage"}
+n8n            | 2025-10-14T22:41:05.875Z | debug | Pushed to frontend: executionFinished {"dataType":"executionFinished","pushRefs":"7rsiuxmjoz","file":"abstract.push.js","function":"sendTo"}
+n8n            | 2025-10-14T22:41:05.876Z | info | Execution 5 (job 5) finished successfully {"scopes":["scaling"],"workerId":"worker-0c2529f95ad3","executionId":"5","jobId":"5","file":"scaling.service.js"}
+n8n            | 2025-10-14T22:41:05.912Z | debug | Execution finalized {"executionId":"5","file":"active-executions.js","function":"finalizeExecution"}
+n8n            | 2025-10-14T22:41:05.920Z | debug | Execution removed {"executionId":"5","file":"active-executions.js"}
+n8n            | 2025-10-14T22:41:05.936Z [Rudder] debug: no existing flush timer, creating new one
 
+
+
+n8n            | 2025-10-14T22:41:15.937Z [Rudder] debug: in flush
+n8n            | 2025-10-14T22:41:15.937Z [Rudder] debug: cancelling existing flushTimer...
+n8n            | 2025-10-14T22:41:56.931Z | debug | Querying database for waiting executions {"scopes":["waiting-executions"],"file":"wait-tracker.js","function":"getWaitingExecutions"}
+n8n            | 2025-10-14T22:42:24.838Z | debug | Removed editor-UI session {"pushRef":"7rsiuxmjoz","file":"abstract.push.js","function":"remove"}
+n8n            | 2025-10-14T22:42:25.108Z [Rudder] debug: no existing flush timer, creating new one
+n8n            | 2025-10-14T22:42:26.779Z | debug | Skipped browserId check on /rest/push {"file":"auth.service.js","function":"resolveJwt"}
+n8n            | 2025-10-14T22:42:26.780Z | debug | Add editor-UI session {"pushRef":"z7ljuzqsai","file":"abstract.push.js","function":"add"}
+n8n            | Error fetching feature flags Error [PostHogFetchNetworkError]: Network error while fetching PostHog
+n8n            |     at new PostHogFetchNetworkError (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/posthog-node@3.2.1/node_modules/posthog-core/src/index.ts:41:5)
+n8n            |     at PostHog.<anonymous> (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/posthog-node@3.2.1/node_modules/posthog-core/src/index.ts:546:17)
+n8n            |     at step (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/posthog-node@3.2.1/node_modules/node_modules/tslib/tslib.es6.js:102:23)
+n8n            |     at Object.throw (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/posthog-node@3.2.1/node_modules/node_modules/tslib/tslib.es6.js:83:53)
+n8n            |     at rejected (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/posthog-node@3.2.1/node_modules/node_modules/tslib/tslib.es6.js:74:65)
+n8n            |     at processTicksAndRejections (node:internal/process/task_queues:105:5) {
+n8n            |   error: TypeError: fetch failed
+n8n            |       at node:internal/deps/undici/undici:13510:13
+n8n            |       at processTicksAndRejections (node:internal/process/task_queues:105:5) {
+n8n            |     [cause]: Error: connect ECONNREFUSED 172.67.68.102:443
+n8n            |         at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1637:16) {
+n8n            |       errno: -111,
+n8n            |       code: 'ECONNREFUSED',
+n8n            |       syscall: 'connect',
+n8n            |       address: '172.67.68.102',
+n8n            |       port: 443
+n8n            |     }
+n8n            |   },
+n8n            |   [cause]: TypeError: fetch failed
+n8n            |       at node:internal/deps/undici/undici:13510:13
+n8n            |       at processTicksAndRejections (node:internal/process/task_queues:105:5) {
+n8n            |     [cause]: Error: connect ECONNREFUSED 172.67.68.102:443
+n8n            |         at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1637:16) {
+n8n            |       errno: -111,
+n8n            |       code: 'ECONNREFUSED',
+n8n            |       syscall: 'connect',
+n8n            |       address: '172.67.68.102',
+n8n            |       port: 443
+n8n            |     }
+n8n            |   }
+n8n            | }
+n8n            | 2025-10-14T22:42:35.109Z [Rudder] debug: in flush
+n8n            | 2025-10-14T22:42:35.109Z [Rudder] debug: cancelling existing flushTimer...
+
+
+
+-----------------------
 root@sapl8464:/home/dockeruser/n8n-worker# docker-compose logs -f n8n
 Attaching to n8n
 n8n            | 2025-10-14T22:36:45.900Z | debug | User settings loaded from: /home/node/.n8n/config {"file":"instance-settings.js","function":"loadOrCreate"}
