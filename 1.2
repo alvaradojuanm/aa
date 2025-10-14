@@ -1,3 +1,34 @@
+FROM n8nio/n8n:latest
+
+USER root
+
+# Script que solo exporta variables de entorno
+RUN cat > /usr/local/bin/start-n8n.sh << 'EOF'
+#!/bin/sh
+export HTTP_PROXY=http://10.132.222.73:9090
+export HTTPS_PROXY=http://10.132.222.73:9090
+export http_proxy=http://10.132.222.73:9090
+export https_proxy=http://10.132.222.73:9090
+export NO_PROXY=localhost,127.0.0.1,postgres,redis
+export no_proxy=localhost,127.0.0.1,postgres,redis
+export NODE_TLS_REJECT_UNAUTHORIZED=0
+
+# Forzar que Node.js use el proxy del sistema
+exec /usr/local/bin/n8n "$@"
+EOF
+
+RUN chmod +x /usr/local/bin/start-n8n.sh
+
+USER node
+
+ENTRYPOINT ["/usr/local/bin/start-n8n.sh"]
+
+
+
+
+
+++++++++++++
+
 oot@sapl8464:/home/dockeruser/n8n-worker# docker-compose logs -f n8n
 Attaching to n8n
 n8n            | 2025-10-14T22:36:45.900Z | debug | User settings loaded from: /home/node/.n8n/config {"file":"instance-settings.js","function":"loadOrCreate"}
