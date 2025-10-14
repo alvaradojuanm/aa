@@ -1,3 +1,41 @@
+FROM n8nio/n8n:latest
+
+ARG HTTP_PROXY=http://10.132.222.73:9090
+ARG HTTPS_PROXY=http://10.132.222.73:9090
+ARG NO_PROXY=localhost,127.0.0.1
+
+USER root
+
+# Configurar npm para usar el proxy
+RUN npm config set proxy ${HTTP_PROXY} && \
+    npm config set https-proxy ${HTTPS_PROXY} && \
+    npm config set strict-ssl false
+
+# Crear directorio para global-agent
+RUN mkdir -p /opt/global-agent
+
+# Instalar global-agent en una ubicación separada
+RUN cd /opt/global-agent && \
+    npm install global-agent && \
+    chown -R node:node /opt/global-agent
+
+# Limpiar configuración de proxy
+RUN npm config delete proxy && \
+    npm config delete https-proxy
+
+# Crear script de inicio
+RUN echo '#!/bin/sh' > /usr/local/bin/start-n8n.sh && \
+    echo 'export NODE_PATH=/opt/global-agent/node_modules:$NODE_PATH' >> /usr/local/bin/start-n8n.sh && \
+    echo 'exec node -r global-agent/bootstrap /usr/local/bin/n8n "$@"' >> /usr/local/bin/start-n8n.sh && \
+    chmod +x /usr/local/bin/start-n8n.sh
+
+USER node
+
+ENTRYPOINT ["/usr/local/bin/start-n8n.sh"]
+
+
+\\\\\\\\\\\\\\
+
 root@sapl8464:/home/dockeruser/n8n-worker# docker-compose build --no-cache
 postgres uses an image, skipping
 pgadmin uses an image, skipping
