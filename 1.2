@@ -1,23 +1,33 @@
 services:
   n8n:
-    image: n8nio/n8n:latest
+    build: .  # ← CAMBIO CLAVE: Construye desde el Dockerfile local
     container_name: n8n
     restart: always
     ports:
       - "5678:5678"
     environment:
-      # --- INICIO: Configuración de Proxy Corporativo ---
-      - GLOBAL_AGENT_FORCE_GLOBAL_AGENT=true
-      - NODE_TLS_REJECT_UNAUTHORIZED=0
+      # ============================================================
+      # CONFIGURACIÓN DE PROXY - EXPLICACIÓN DETALLADA
+      # ============================================================
+      
+      # Variables para global-agent (librería de Node.js)
+      # Estas SON NECESARIAS porque Node.js no lee HTTP_PROXY por defecto
+      - GLOBAL_AGENT_HTTP_PROXY=http://10.132.222.73:9090
+      - GLOBAL_AGENT_HTTPS_PROXY=http://10.132.222.73:9090
+      - GLOBAL_AGENT_NO_PROXY=localhost,127.0.0.1,postgres,redis
+      
+      # Variables tradicionales de proxy (para herramientas del sistema)
+      # Estas las usa curl, wget, apt, pero NO Node.js directamente
       - HTTP_PROXY=http://10.132.222.73:9090
       - HTTPS_PROXY=http://10.132.222.73:9090
-      - https_proxy=http://10.132.222.73:9090
-      - FTP_PROXY=http://10.132.222.73:9090
-      - ftp_proxy=http://10.132.222.73:9090
       - NO_PROXY=localhost,127.0.0.1,postgres,redis
-      # --- FIN: Configuración de Proxy Corporativo ---
+      
+      # Deshabilitar validación de certificados SSL
+      # IMPORTANTE: Úsalo solo si el proxy intercepta SSL
+      - NODE_TLS_REJECT_UNAUTHORIZED=0
+      # ============================================================
 
-      # servicio n8n
+      # Configuración de n8n
       - N8N_SECURE_COOKIE=false
       - N8N_BASIC_AUTH_ACTIVE=${N8N_BASIC_AUTH_ACTIVE}
       - N8N_BASIC_AUTH_USER=${N8N_BASIC_AUTH_USER}
@@ -70,10 +80,10 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_DB=${POSTGRES_DB}
     healthcheck:
-        test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
-        interval: 5s
-        timeout: 5s
-        retries: 10
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
@@ -98,19 +108,21 @@ services:
       - postgres
 
   n8n_worker1:
-    image: n8nio/n8n:latest
+    build: .  # ← CAMBIO: También usa el Dockerfile
+    container_name: n8n_worker1
     restart: always
     environment:
-      # --- INICIO: Configuración de Proxy Corporativo ---
-      - GLOBAL_AGENT_FORCE_GLOBAL_AGENT=true
-      - NODE_TLS_REJECT_UNAUTHORIZED=0
+      # ============================================================
+      # CONFIGURACIÓN DE PROXY (igual que el contenedor principal)
+      # ============================================================
+      - GLOBAL_AGENT_HTTP_PROXY=http://10.132.222.73:9090
+      - GLOBAL_AGENT_HTTPS_PROXY=http://10.132.222.73:9090
+      - GLOBAL_AGENT_NO_PROXY=localhost,127.0.0.1,postgres,redis,n8n
       - HTTP_PROXY=http://10.132.222.73:9090
       - HTTPS_PROXY=http://10.132.222.73:9090
-      - https_proxy=http://10.132.222.73:9090
-      - FTP_PROXY=http://10.132.222.73:9090
-      - ftp_proxy=http://10.132.222.73:9090
-      - NO_PROXY=localhost,127.0.0.1,postgres,redis
-      # --- FIN: Configuración de Proxy Corporativo ---
+      - NO_PROXY=localhost,127.0.0.1,postgres,redis,n8n
+      - NODE_TLS_REJECT_UNAUTHORIZED=0
+      # ============================================================
 
       # Configuración de la base de datos
       - N8N_POSTGRES_HOST=postgres
@@ -149,19 +161,21 @@ services:
     command: worker
 
   n8n_worker2:
-    image: n8nio/n8n:latest
+    build: .  # ← CAMBIO: También usa el Dockerfile
+    container_name: n8n_worker2
     restart: always
     environment:
-      # --- INICIO: Configuración de Proxy Corporativo ---
-      - GLOBAL_AGENT_FORCE_GLOBAL_AGENT=true
-      - NODE_TLS_REJECT_UNAUTHORIZED=0
+      # ============================================================
+      # CONFIGURACIÓN DE PROXY (igual que los anteriores)
+      # ============================================================
+      - GLOBAL_AGENT_HTTP_PROXY=http://10.132.222.73:9090
+      - GLOBAL_AGENT_HTTPS_PROXY=http://10.132.222.73:9090
+      - GLOBAL_AGENT_NO_PROXY=localhost,127.0.0.1,postgres,redis,n8n
       - HTTP_PROXY=http://10.132.222.73:9090
       - HTTPS_PROXY=http://10.132.222.73:9090
-      - https_proxy=http://10.132.222.73:9090
-      - FTP_PROXY=http://10.132.222.73:9090
-      - ftp_proxy=http://10.132.222.73:9090
-      - NO_PROXY=localhost,127.0.0.1,postgres,redis
-      # --- FIN: Configuración de Proxy Corporativo ---
+      - NO_PROXY=localhost,127.0.0.1,postgres,redis,n8n
+      - NODE_TLS_REJECT_UNAUTHORIZED=0
+      # ============================================================
 
       # Configuración de la base de datos
       - N8N_POSTGRES_HOST=postgres
@@ -201,6 +215,7 @@ services:
 
   redis:
     image: redis:6-alpine
+    container_name: n8n_redis
     restart: always
     volumes:
       - redis_data:/data
@@ -214,14 +229,15 @@ services:
 
   redis_admin:
     image: rediscommander/redis-commander:latest
+    container_name: n8n_redis_admin
     restart: always
     environment:
       - REDIS_HOSTS=local:redis:6379
     ports:
       - "8081:8081"
     depends_on:
-        redis:
-         condition: service_healthy
+      redis:
+        condition: service_healthy
     networks:
       - n8n_network
 
@@ -234,3 +250,29 @@ volumes:
   redis_data:
   n8n_data:
   pgadmin_data:
+
+*****************************
+
+# Usamos la imagen oficial de n8n
+FROM n8nio/n8n:latest
+
+# Cambiamos a usuario root para instalar paquetes
+USER root
+
+# Instalamos global-agent: es una librería de Node.js que intercepta 
+# TODAS las peticiones HTTP/HTTPS y las redirige al proxy
+RUN npm install -g global-agent
+
+# Creamos un script personalizado que inicia n8n con global-agent activado
+# El "-r global-agent/bootstrap" carga global-agent ANTES de que n8n inicie
+RUN echo '#!/bin/sh' > /usr/local/bin/start-n8n.sh && \
+    echo 'exec node -r global-agent/bootstrap /usr/local/bin/n8n "$@"' >> /usr/local/bin/start-n8n.sh && \
+    chmod +x /usr/local/bin/start-n8n.sh
+
+# Volvemos al usuario node (por seguridad)
+USER node
+
+# Definimos el punto de entrada con nuestro script personalizado
+ENTRYPOINT ["/usr/local/bin/start-n8n.sh"]
+
+  
