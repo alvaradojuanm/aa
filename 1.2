@@ -1,3 +1,43 @@
+root@sapl8464:/home/dockeruser/n8n-worker# docker-compose build --no-cache
+postgres uses an image, skipping
+pgadmin uses an image, skipping
+redis uses an image, skipping
+redis_admin uses an image, skipping
+Building n8n
+[+] Building 28.2s (7/9)                                                                                                                                                                       docker:default
+ => [internal] load build definition from Dockerfile                                                                                                                                                     0.0s
+ => => transferring dockerfile: 1.15kB                                                                                                                                                                   0.0s
+ => [internal] load metadata for docker.io/n8nio/n8n:latest                                                                                                                                              1.4s
+ => [auth] n8nio/n8n:pull token for registry-1.docker.io                                                                                                                                                 0.0s
+ => [internal] load .dockerignore                                                                                                                                                                        0.0s
+ => => transferring context: 2B                                                                                                                                                                          0.0s
+ => CACHED [1/5] FROM docker.io/n8nio/n8n:latest@sha256:fa410b71ccb5ddee9f9e4b25a964fbc8fcf56744d5f24dc4d2b8b414ae76ee26                                                                                 0.0s
+ => => resolve docker.io/n8nio/n8n:latest@sha256:fa410b71ccb5ddee9f9e4b25a964fbc8fcf56744d5f24dc4d2b8b414ae76ee26                                                                                        0.0s
+ => [2/5] RUN npm config set proxy http://10.132.222.73:9090 &&     npm config set https-proxy http://10.132.222.73:9090 &&     npm config set strict-ssl false                                          1.1s
+ => ERROR [3/5] RUN cd /usr/local/lib/node_modules/n8n &&     npm install global-agent                                                                                                                  25.4s
+------
+ > [3/5] RUN cd /usr/local/lib/node_modules/n8n &&     npm install global-agent:
+25.09 npm error code EUNSUPPORTEDPROTOCOL
+25.09 npm error Unsupported URL Type "workspace:": workspace:*
+25.10 npm error A complete log of this run can be found in: /root/.npm/_logs/2025-10-14T22_29_56_066Z-debug-0.log
+------
+Dockerfile:16
+--------------------
+  15 |     # Instalar global-agent en el directorio de n8n (accesible para usuario node)
+  16 | >>> RUN cd /usr/local/lib/node_modules/n8n && \
+  17 | >>>     npm install global-agent
+  18 |
+--------------------
+ERROR: failed to build: failed to solve: process "/bin/sh -c cd /usr/local/lib/node_modules/n8n &&     npm install global-agent" did not complete successfully: exit code: 1
+ERROR: Service 'n8n' failed to build : Build failed
+root@sapl8464:/home/dockeruser/n8n-worker#
+
+
+
+
+///////////////
+
+
 # Detener y eliminar contenedores
 docker-compose down
 
