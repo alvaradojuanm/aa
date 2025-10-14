@@ -1,3 +1,21 @@
+
+docker-compose.yml  Dokerfile  pgadmin_data
+root@sapl8464:/home/dockeruser/n8n-worker# docker-compose build --no-cache
+postgres uses an image, skipping
+pgadmin uses an image, skipping
+redis uses an image, skipping
+redis_admin uses an image, skipping
+Building n8n
+[+] Building 0.2s (1/1) FINISHED                                                                                                                                                               docker:default
+ => [internal] load build definition from Dockerfile                                                                                                                                                     0.1s
+ => => transferring dockerfile: 2B                                                                                                                                                                       0.0s
+ERROR: failed to build: failed to solve: failed to read dockerfile: open Dockerfile: no such file or directory
+ERROR: Service 'n8n' failed to build : Build failed
+root@sapl8464:/home/dockeruser/n8n-worker#
+
+
+***********************
+
 services:
   n8n:
     build: .  # ← CAMBIO CLAVE: Construye desde el Dockerfile local
