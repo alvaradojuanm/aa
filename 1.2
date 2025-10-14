@@ -1,4 +1,61 @@
 
+
+
+root@sapl8464:/home/dockeruser/n8n-worker# docker-compose build --no-cache
+postgres uses an image, skipping
+pgadmin uses an image, skipping
+redis uses an image, skipping
+redis_admin uses an image, skipping
+Building n8n
+[+] Building 73.2s (5/6)                                                                                                                                                                       docker:default
+ => [internal] load build definition from Dockerfile                                                                                                                                                     0.0s
+ => => transferring dockerfile: 856B                                                                                                                                                                     0.0s
+ => [internal] load metadata for docker.io/n8nio/n8n:latest                                                                                                                                              0.0s
+ => [internal] load .dockerignore                                                                                                                                                                        0.0s
+ => => transferring context: 2B                                                                                                                                                                          0.0s
+ => [1/3] FROM docker.io/n8nio/n8n:latest                                                                                                                                                                0.5s
+ => ERROR [2/3] RUN npm install -g global-agent                                                                                                                                                         72.5s
+------
+ > [2/3] RUN npm install -g global-agent:
+72.35 npm error code ECONNREFUSED
+72.35 npm error errno ECONNREFUSED
+72.36 npm error FetchError: request to https://registry.npmjs.org/global-agent failed, reason:
+72.36 npm error     at ClientRequest.<anonymous> (/usr/local/lib/node_modules/npm/node_modules/minipass-fetch/lib/index.js:130:14)
+72.36 npm error     at ClientRequest.emit (node:events:519:28)
+72.36 npm error     at emitErrorEvent (node:_http_client:105:11)
+72.36 npm error     at _destroy (node:_http_client:898:9)
+72.36 npm error     at onSocketNT (node:_http_client:918:5)
+72.36 npm error     at process.processTicksAndRejections (node:internal/process/task_queues:91:21) {
+72.36 npm error   code: 'ECONNREFUSED',
+72.36 npm error   errno: 'ECONNREFUSED',
+72.36 npm error   type: 'system',
+72.36 npm error   requiredBy: '.'
+72.36 npm error }
+72.36 npm error
+72.36 npm error If you are behind a proxy, please make sure that the
+72.36 npm error 'proxy' config is set properly.  See: 'npm help config'
+72.36 npm error A complete log of this run can be found in: /root/.npm/_logs/2025-10-14T22_14_14_435Z-debug-0.log
+------
+Dockerfile:9
+--------------------
+   7 |     # Instalamos global-agent: es una librería de Node.js que intercepta
+   8 |     # TODAS las peticiones HTTP/HTTPS y las redirige al proxy
+   9 | >>> RUN npm install -g global-agent
+  10 |
+  11 |     # Creamos un script personalizado que inicia n8n con global-agent activado
+--------------------
+ERROR: failed to build: failed to solve: process "/bin/sh -c npm install -g global-agent" did not complete successfully: exit code: 1
+ERROR: Service 'n8n' failed to build : Build failed
+root@sapl8464:/home/dockeruser/n8n-worker#
+
+
+
+
+
+
+---------------------
+
+
 docker-compose.yml  Dokerfile  pgadmin_data
 root@sapl8464:/home/dockeruser/n8n-worker# docker-compose build --no-cache
 postgres uses an image, skipping
