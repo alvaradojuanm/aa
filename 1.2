@@ -1,3 +1,25 @@
+FROM n8nio/n8n:latest
+
+USER root
+
+# Crear el script de inicio
+RUN echo '#!/bin/sh' > /usr/local/bin/start-n8n.sh && \
+    echo 'export HTTP_PROXY=http://10.132.222.73:9090' >> /usr/local/bin/start-n8n.sh && \
+    echo 'export HTTPS_PROXY=http://10.132.222.73:9090' >> /usr/local/bin/start-n8n.sh && \
+    echo 'export http_proxy=http://10.132.222.73:9090' >> /usr/local/bin/start-n8n.sh && \
+    echo 'export https_proxy=http://10.132.222.73:9090' >> /usr/local/bin/start-n8n.sh && \
+    echo 'export NO_PROXY=localhost,127.0.0.1,postgres,redis' >> /usr/local/bin/start-n8n.sh && \
+    echo 'export no_proxy=localhost,127.0.0.1,postgres,redis' >> /usr/local/bin/start-n8n.sh && \
+    echo 'export NODE_TLS_REJECT_UNAUTHORIZED=0' >> /usr/local/bin/start-n8n.sh && \
+    echo 'exec /usr/local/bin/n8n "$@"' >> /usr/local/bin/start-n8n.sh && \
+    chmod +x /usr/local/bin/start-n8n.sh
+
+USER node
+
+ENTRYPOINT ["/usr/local/bin/start-n8n.sh"]
+
+
++++++++++++++++
 root@sapl8464:/home/dockeruser/n8n-worker# nano Dockerfile
 root@sapl8464:/home/dockeruser/n8n-worker# docker-compose build --no-cache
 postgres uses an image, skipping
