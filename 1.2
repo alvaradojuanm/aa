@@ -1,3 +1,82 @@
+root@sapl8464:/home/dockeruser/n8n-worker# nano Dockerfile
+root@sapl8464:/home/dockeruser/n8n-worker# docker-compose build --no-cache
+postgres uses an image, skipping
+pgadmin uses an image, skipping
+redis uses an image, skipping
+redis_admin uses an image, skipping
+Building n8n
+[+] Building 1.7s (8/8) FINISHED                                                                                                                                                               docker:default
+ => [internal] load build definition from Dockerfile                                                                                                                                                     0.0s
+ => => transferring dockerfile: 696B                                                                                                                                                                     0.0s
+ => [internal] load metadata for docker.io/n8nio/n8n:latest                                                                                                                                              0.6s
+ => [auth] n8nio/n8n:pull token for registry-1.docker.io                                                                                                                                                 0.0s
+ => [internal] load .dockerignore                                                                                                                                                                        0.0s
+ => => transferring context: 2B                                                                                                                                                                          0.0s
+ => CACHED [1/3] FROM docker.io/n8nio/n8n:latest@sha256:fa410b71ccb5ddee9f9e4b25a964fbc8fcf56744d5f24dc4d2b8b414ae76ee26                                                                                 0.0s
+ => => resolve docker.io/n8nio/n8n:latest@sha256:fa410b71ccb5ddee9f9e4b25a964fbc8fcf56744d5f24dc4d2b8b414ae76ee26                                                                                        0.0s
+ => [2/3] RUN cat > /usr/local/bin/start-n8n.sh << 'EOF'                                                                                                                                                 0.3s
+ => [3/3] RUN chmod +x /usr/local/bin/start-n8n.sh                                                                                                                                                       0.4s
+ => exporting to image                                                                                                                                                                                   0.1s
+ => => exporting layers                                                                                                                                                                                  0.1s
+ => => writing image sha256:849f8fbcc37e71e85f220e00b5343e9e8832d83bc4a3517f9b0ce3b66a8e2971                                                                                                             0.0s
+ => => naming to docker.io/library/n8n-worker_n8n                                                                                                                                                        0.0s
+Building n8n_worker2
+[+] Building 1.2s (7/7) FINISHED                                                                                                                                                               docker:default
+ => [internal] load build definition from Dockerfile                                                                                                                                                     0.0s
+ => => transferring dockerfile: 696B                                                                                                                                                                     0.0s
+ => [internal] load metadata for docker.io/n8nio/n8n:latest                                                                                                                                              0.1s
+ => [internal] load .dockerignore                                                                                                                                                                        0.0s
+ => => transferring context: 2B                                                                                                                                                                          0.0s
+ => CACHED [1/3] FROM docker.io/n8nio/n8n:latest@sha256:fa410b71ccb5ddee9f9e4b25a964fbc8fcf56744d5f24dc4d2b8b414ae76ee26                                                                                 0.0s
+ => => resolve docker.io/n8nio/n8n:latest@sha256:fa410b71ccb5ddee9f9e4b25a964fbc8fcf56744d5f24dc4d2b8b414ae76ee26                                                                                        0.0s
+ => [2/3] RUN cat > /usr/local/bin/start-n8n.sh << 'EOF'                                                                                                                                                 0.3s
+ => [3/3] RUN chmod +x /usr/local/bin/start-n8n.sh                                                                                                                                                       0.4s
+ => exporting to image                                                                                                                                                                                   0.1s
+ => => exporting layers                                                                                                                                                                                  0.1s
+ => => writing image sha256:37ad214fe6de4cf7f1b7bfbe8d39d9aedc405396b1456086b26de652c033887a                                                                                                             0.0s
+ => => naming to docker.io/library/n8n-worker_n8n_worker2                                                                                                                                                0.0s
+Building n8n_worker1
+[+] Building 1.2s (7/7) FINISHED                                                                                                                                                               docker:default
+ => [internal] load build definition from Dockerfile                                                                                                                                                     0.0s
+ => => transferring dockerfile: 696B                                                                                                                                                                     0.0s
+ => [internal] load metadata for docker.io/n8nio/n8n:latest                                                                                                                                              0.1s
+ => [internal] load .dockerignore                                                                                                                                                                        0.0s
+ => => transferring context: 2B                                                                                                                                                                          0.0s
+ => CACHED [1/3] FROM docker.io/n8nio/n8n:latest@sha256:fa410b71ccb5ddee9f9e4b25a964fbc8fcf56744d5f24dc4d2b8b414ae76ee26                                                                                 0.0s
+ => => resolve docker.io/n8nio/n8n:latest@sha256:fa410b71ccb5ddee9f9e4b25a964fbc8fcf56744d5f24dc4d2b8b414ae76ee26                                                                                        0.0s
+ => [2/3] RUN cat > /usr/local/bin/start-n8n.sh << 'EOF'                                                                                                                                                 0.3s
+ => [3/3] RUN chmod +x /usr/local/bin/start-n8n.sh                                                                                                                                                       0.3s
+ => exporting to image                                                                                                                                                                                   0.1s
+ => => exporting layers                                                                                                                                                                                  0.1s
+ => => writing image sha256:d7ce40acb31e11ba606083db6b150551f46d2c070b94b10330bd3b76a6b70625                                                                                                             0.0s
+ => => naming to docker.io/library/n8n-worker_n8n_worker1                                                                                                                                                0.0s
+root@sapl8464:/home/dockeruser/n8n-worker# docker-compose up -d
+Creating network "n8n-worker_n8n_network" with driver "bridge"
+Creating n8n_postgres ... done
+Creating n8n_redis    ... done
+Creating n8n_pgadmin  ... done
+Creating n8n             ... done
+Creating n8n_redis_admin ... done
+Creating n8n_worker2     ... done
+Creating n8n_worker1     ... done
+root@sapl8464:/home/dockeruser/n8n-worker# docker-compose logs -f n8n
+Attaching to n8n
+n8n            | exec /usr/local/bin/start-n8n.sh: no such file or directory
+n8n            | exec /usr/local/bin/start-n8n.sh: no such file or directory
+n8n            | exec /usr/local/bin/start-n8n.sh: no such file or directory
+n8n            | exec /usr/local/bin/start-n8n.sh: no such file or directory
+n8n            | exec /usr/local/bin/start-n8n.sh: no such file or directory
+n8n            | exec /usr/local/bin/start-n8n.sh: no such file or directory
+n8n            | exec /usr/local/bin/start-n8n.sh: no such file or directory
+n8n            | exec /usr/local/bin/start-n8n.sh: no such file or directory
+n8n            | exec /usr/local/bin/start-n8n.sh: no such file or directory
+
+
+
+++++++++++++++++++++
+
+
+
 FROM n8nio/n8n:latest
 
 USER root
