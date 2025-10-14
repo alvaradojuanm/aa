@@ -1,3 +1,233 @@
+root@sapl8464:/home/dockeruser/n8n-worker# nano Dockerfile
+root@sapl8464:/home/dockeruser/n8n-worker# docker-compose build --no-cache
+postgres uses an image, skipping
+pgadmin uses an image, skipping
+redis uses an image, skipping
+redis_admin uses an image, skipping
+Building n8n
+[+] Building 1.5s (6/6) FINISHED                                                                                                                                                               docker:default
+ => [internal] load build definition from Dockerfile                                                                                                                                                     0.0s
+ => => transferring dockerfile: 995B                                                                                                                                                                     0.0s
+ => [internal] load metadata for docker.io/n8nio/n8n:latest                                                                                                                                              0.4s
+ => [internal] load .dockerignore                                                                                                                                                                        0.0s
+ => => transferring context: 2B                                                                                                                                                                          0.0s
+ => CACHED [1/2] FROM docker.io/n8nio/n8n:latest@sha256:fa410b71ccb5ddee9f9e4b25a964fbc8fcf56744d5f24dc4d2b8b414ae76ee26                                                                                 0.0s
+ => => resolve docker.io/n8nio/n8n:latest@sha256:fa410b71ccb5ddee9f9e4b25a964fbc8fcf56744d5f24dc4d2b8b414ae76ee26                                                                                        0.0s
+ => [2/2] RUN echo '#!/bin/sh' > /usr/local/bin/start-n8n.sh &&     echo 'export HTTP_PROXY=http://10.132.222.73:9090' >> /usr/local/bin/start-n8n.sh &&     echo 'export HTTPS_PROXY=http://10.132.222  0.8s
+ => exporting to image                                                                                                                                                                                   0.1s
+ => => exporting layers                                                                                                                                                                                  0.1s
+ => => writing image sha256:e3f554ff7e456788dc6feaca2ad39e81867ac880807657e57cb52b2d708bcd0f                                                                                                             0.0s
+ => => naming to docker.io/library/n8n-worker_n8n                                                                                                                                                        0.0s
+Building n8n_worker2
+[+] Building 0.8s (6/6) FINISHED                                                                                                                                                               docker:default
+ => [internal] load build definition from Dockerfile                                                                                                                                                     0.0s
+ => => transferring dockerfile: 995B                                                                                                                                                                     0.0s
+ => [internal] load metadata for docker.io/n8nio/n8n:latest                                                                                                                                              0.1s
+ => [internal] load .dockerignore                                                                                                                                                                        0.0s
+ => => transferring context: 2B                                                                                                                                                                          0.0s
+ => CACHED [1/2] FROM docker.io/n8nio/n8n:latest@sha256:fa410b71ccb5ddee9f9e4b25a964fbc8fcf56744d5f24dc4d2b8b414ae76ee26                                                                                 0.0s
+ => => resolve docker.io/n8nio/n8n:latest@sha256:fa410b71ccb5ddee9f9e4b25a964fbc8fcf56744d5f24dc4d2b8b414ae76ee26                                                                                        0.0s
+ => [2/2] RUN echo '#!/bin/sh' > /usr/local/bin/start-n8n.sh &&     echo 'export HTTP_PROXY=http://10.132.222.73:9090' >> /usr/local/bin/start-n8n.sh &&     echo 'export HTTPS_PROXY=http://10.132.222  0.3s
+ => exporting to image                                                                                                                                                                                   0.1s
+ => => exporting layers                                                                                                                                                                                  0.1s
+ => => writing image sha256:6e1a00f61e1de7e34a53b8e1b3e1960cf37937fd685621f583890e0f1073328b                                                                                                             0.0s
+ => => naming to docker.io/library/n8n-worker_n8n_worker2                                                                                                                                                0.0s
+Building n8n_worker1
+[+] Building 0.8s (6/6) FINISHED                                                                                                                                                               docker:default
+ => [internal] load build definition from Dockerfile                                                                                                                                                     0.0s
+ => => transferring dockerfile: 995B                                                                                                                                                                     0.0s
+ => [internal] load metadata for docker.io/n8nio/n8n:latest                                                                                                                                              0.1s
+ => [internal] load .dockerignore                                                                                                                                                                        0.0s
+ => => transferring context: 2B                                                                                                                                                                          0.0s
+ => CACHED [1/2] FROM docker.io/n8nio/n8n:latest@sha256:fa410b71ccb5ddee9f9e4b25a964fbc8fcf56744d5f24dc4d2b8b414ae76ee26                                                                                 0.0s
+ => => resolve docker.io/n8nio/n8n:latest@sha256:fa410b71ccb5ddee9f9e4b25a964fbc8fcf56744d5f24dc4d2b8b414ae76ee26                                                                                        0.0s
+ => [2/2] RUN echo '#!/bin/sh' > /usr/local/bin/start-n8n.sh &&     echo 'export HTTP_PROXY=http://10.132.222.73:9090' >> /usr/local/bin/start-n8n.sh &&     echo 'export HTTPS_PROXY=http://10.132.222  0.3s
+ => exporting to image                                                                                                                                                                                   0.1s
+ => => exporting layers                                                                                                                                                                                  0.1s
+ => => writing image sha256:22c386c3d90aad90fc9be1013a1c77d99c629a672eb70e346ff06f83b904bcf1                                                                                                             0.0s
+ => => naming to docker.io/library/n8n-worker_n8n_worker1                                                                                                                                                0.0s
+root@sapl8464:/home/dockeruser/n8n-worker# docker-compose up -d
+Creating network "n8n-worker_n8n_network" with driver "bridge"
+Creating n8n_redis    ... done
+Creating n8n_postgres ... done
+Creating n8n_pgadmin  ... done
+Creating n8n_redis_admin ... done
+Creating n8n             ... done
+Creating n8n_worker1     ... done
+Creating n8n_worker2     ... done
+root@sapl8464:/home/dockeruser/n8n-worker# docker-compose logs -f n8n
+Attaching to n8n
+n8n            | 2025-10-14T22:51:41.073Z | debug | User settings loaded from: /home/node/.n8n/config {"file":"instance-settings.js","function":"loadOrCreate"}
+n8n            | 2025-10-14T22:51:41.167Z | debug | Received CLI command {"execPath":"/usr/local/bin/node","scriptPath":"/usr/local/bin/n8n","args":[],"flags":{},"file":"cli-parser.js","function":"parse"}
+n8n            | 2025-10-14T22:51:41.172Z | error | Last session crashed {"file":"crash-journal.js","function":"init"}
+n8n            | 2025-10-14T22:51:51.177Z | info | Initializing n8n process {"file":"start.js","function":"init"}
+n8n            | 2025-10-14T22:51:51.179Z | debug | Starting main instance in scaling mode {"scopes":["scaling"],"file":"start.js","function":"init"}
+n8n            | 2025-10-14T22:51:51.179Z | debug | Host ID: main-8959cc9ce03b {"scopes":["scaling"],"file":"start.js","function":"init"}
+n8n            | 2025-10-14T22:51:51.463Z | debug | Lazy-loading nodes and credentials from n8n-nodes-base {"nodes":483,"credentials":385,"file":"lazy-package-directory-loader.js","function":"loadAll"}
+n8n            | 2025-10-14T22:51:51.480Z | debug | Lazy-loading nodes and credentials from @n8n/n8n-nodes-langchain {"nodes":102,"credentials":23,"file":"lazy-package-directory-loader.js","function":"loadAll"}
+n8n            | 2025-10-14T22:51:51.826Z | info | n8n ready on ::, port 5678 {"file":"abstract-server.js","function":"init"}
+n8n            | 2025-10-14T22:51:51.846Z | debug | Initializing AuthRolesService... {"file":"auth.roles.service.js","function":"init"}
+n8n            | 2025-10-14T22:51:51.857Z | debug | No scopes to update. {"file":"auth.roles.service.js","function":"syncScopes"}
+n8n            | 2025-10-14T22:51:51.878Z | debug | No global roles to update. {"file":"auth.roles.service.js","function":"syncRoles"}
+n8n            | 2025-10-14T22:51:51.879Z | debug | No project roles to update. {"file":"auth.roles.service.js","function":"syncRoles"}
+n8n            | 2025-10-14T22:51:51.879Z | debug | No credential roles to update. {"file":"auth.roles.service.js","function":"syncRoles"}
+n8n            | 2025-10-14T22:51:51.879Z | debug | No workflow roles to update. {"file":"auth.roles.service.js","function":"syncRoles"}
+n8n            | 2025-10-14T22:51:51.879Z | debug | AuthRolesService initialized successfully. {"file":"auth.roles.service.js","function":"init"}
+n8n            | 2025-10-14T22:51:51.880Z | warn | Scaling mode is not officially supported with sqlite. Please use PostgreSQL instead. {"file":"base-command.js","function":"init"}
+n8n            | 2025-10-14T22:51:51.891Z | debug | Started Redis client publisher(n8n) {"scopes":["redis","scaling"],"type":"publisher(n8n)","host":"redis","port":6379,"file":"redis-client.service.js","function":"createRegularClient"}
+n8n            | 2025-10-14T22:51:51.924Z | info | n8n Task Broker ready on 127.0.0.1, port 5679 {"file":"task-broker-server.js","function":"setupHttpServer"}
+n8n            | 2025-10-14T22:51:51.974Z | debug | Started Redis client cache(n8n) {"scopes":["redis","scaling"],"type":"cache(n8n)","host":"redis","port":6379,"file":"redis-client.service.js","function":"createRegularClient"}
+n8n            | 2025-10-14T22:51:52.041Z | warn |
+n8n            | There are deprecations related to your environment variables. Please take the recommended actions to update your configuration:
+n8n            |  - DB_SQLITE_POOL_SIZE -> Running SQLite without a pool of read connections is deprecated. Please set `DB_SQLITE_POOL_SIZE` to a value higher than zero. See: https://docs.n8n.io/hosting/configuration/environment-variables/database/#sqlite
+n8n            |  - N8N_BLOCK_ENV_ACCESS_IN_NODE -> The default value of N8N_BLOCK_ENV_ACCESS_IN_NODE will be changed from false to true in a future version. If you need to access environment variables from the Code Node or from expressions, please set N8N_BLOCK_ENV_ACCESS_IN_NODE=false. Learn more: https://docs.n8n.io/hosting/configuration/environment-variables/security/
+n8n            |  - N8N_GIT_NODE_DISABLE_BARE_REPOS -> Support for bare repositories in the Git Node will be removed in a future version due to security concerns. If you are not using bare repositories in the Git Node, please set N8N_GIT_NODE_DISABLE_BARE_REPOS=true. Learn more: https://docs.n8n.io/hosting/configuration/environment-variables/security/
+n8n            |  {"file":"deprecation.service.js","function":"warn"}
+n8n            | 2025-10-14T22:51:52.048Z | debug | Registered a "reload-license" event handler on License#reload {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:51:52.048Z | debug | Registered a "relay-execution-lifecycle-event" event handler on Push#handleRelayExecutionLifecycleEvent {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:51:52.049Z | debug | Registered a "reload-overwrite-credentials" event handler on CredentialsOverwrites#reloadOverwriteCredentials {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:51:52.049Z | debug | Registered a "clear-test-webhooks" event handler on TestWebhooks#handleClearTestWebhooks {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:51:52.050Z | debug | Registered a "display-workflow-activation" event handler on ActiveWorkflowManager#handleDisplayWorkflowActivation {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:51:52.050Z | debug | Registered a "display-workflow-deactivation" event handler on ActiveWorkflowManager#handleDisplayWorkflowDeactivation {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:51:52.051Z | debug | Registered a "display-workflow-activation-error" event handler on ActiveWorkflowManager#handleDisplayWorkflowActivationError {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:51:52.051Z | debug | Registered a "add-webhooks-triggers-and-pollers" event handler on ActiveWorkflowManager#handleAddWebhooksTriggersAndPollers {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:51:52.051Z | debug | Registered a "remove-triggers-and-pollers" event handler on ActiveWorkflowManager#handleRemoveTriggersAndPollers {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:51:52.051Z | debug | Registered a "restart-event-bus" event handler on MessageEventBus#restart {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:51:52.052Z | debug | Registered a "response-to-get-worker-status" event handler on WorkerStatusService#handleWorkerStatusResponse {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:51:52.053Z | debug | Registered a "community-package-update" event handler on CommunityPackagesService#handleInstallEvent {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:51:52.053Z | debug | Registered a "community-package-install" event handler on CommunityPackagesService#handleInstallEvent {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:51:52.053Z | debug | Registered a "community-package-uninstall" event handler on CommunityPackagesService#handleUninstallEvent {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:51:52.055Z | debug | Started Redis client subscriber(n8n) {"scopes":["redis","scaling"],"type":"subscriber(n8n)","host":"redis","port":6379,"file":"redis-client.service.js","function":"createRegularClient"}
+n8n            | 2025-10-14T22:51:52.058Z | debug | Subscribed to channel n8n.commands {"scopes":["scaling","pubsub"],"file":"subscriber.service.js"}
+n8n            | 2025-10-14T22:51:52.059Z | debug | Subscribed to channel n8n.worker-response {"scopes":["scaling","pubsub"],"file":"subscriber.service.js"}
+n8n            | 2025-10-14T22:51:52.061Z | debug | [license SDK] initializing for deviceFingerprint e534fde58f3e53a0d28cbf6e83277281b82ee134a6f6e38802134cf2c2a5c9a9 {"scopes":["license"],"file":"LicenseManager.js","function":"log"}
+n8n            | 2025-10-14T22:51:52.064Z | info | [license SDK] Skipping renewal on init: license cert is not initialized {"scopes":["license"],"file":"LicenseManager.js","function":"log"}
+n8n            | 2025-10-14T22:51:52.065Z | debug | License initialized {"scopes":["license"],"file":"license.js","function":"init"}
+n8n            | 2025-10-14T22:51:52.066Z | debug | Querying database for waiting executions {"scopes":["waiting-executions"],"file":"wait-tracker.js","function":"getWaitingExecutions"}
+n8n            | 2025-10-14T22:51:52.068Z | debug | Started tracking waiting executions {"scopes":["waiting-executions"],"file":"wait-tracker.js","function":"startTracking"}
+n8n            | 2025-10-14T22:51:52.069Z | debug | Wait tracker init complete {"file":"start.js","function":"init"}
+n8n            | 2025-10-14T22:51:52.069Z | debug | Loading overwrite credentials from static envvar {"file":"credentials-overwrites.js","function":"init"}
+n8n            | 2025-10-14T22:51:52.070Z | debug | Credentials overwrites init complete {"file":"start.js","function":"init"}
+n8n            | 2025-10-14T22:51:52.073Z | debug | Binary data service init complete {"file":"start.js","function":"init"}
+n8n            | 2025-10-14T22:51:52.074Z | debug | Data deduplication service init complete {"file":"start.js","function":"init"}
+n8n            | 2025-10-14T22:51:52.075Z | debug | External hooks init complete {"file":"start.js","function":"init"}
+n8n            | 2025-10-14T22:51:52.075Z | debug | Workflow history init complete {"file":"start.js","function":"init"}
+n8n            | 2025-10-14T22:51:52.086Z | debug | Test runner cleanup complete {"file":"start.js","function":"init"}
+n8n            | 2025-10-14T22:51:53.674Z | debug | Started flushing timer {"scopes":["insights"],"file":"insights-collection.service.js","function":"startFlushingTimer"}
+n8n            | 2025-10-14T22:51:53.674Z | debug | Started compaction timer {"scopes":["insights"],"file":"insights-compaction.service.js","function":"startCompactionTimer"}
+n8n            | 2025-10-14T22:51:53.676Z | debug | Started pruning timer {"scopes":["insights"],"file":"insights-pruning.service.js","function":"startPruningTimer"}
+n8n            | 2025-10-14T22:51:53.676Z | debug | Initialized module "insights" {"file":"module-registry.js","function":"initModules"}
+n8n            | 2025-10-14T22:51:53.677Z | debug | Skipped init for unlicensed module "external-secrets" {"file":"module-registry.js","function":"initModules"}
+n8n            | 2025-10-14T22:51:53.681Z | debug | Initialized module "community-packages" {"file":"module-registry.js","function":"initModules"}
+n8n            | 2025-10-14T22:51:53.703Z | debug | Initialized module "data-table" {"file":"module-registry.js","function":"initModules"}
+n8n            | 2025-10-14T22:51:53.712Z | debug | Starting legacy SQLite execution recovery... {"scopes":["legacy-sqlite-execution-recovery"],"file":"legacy-sqlite-execution-recovery.service.js","function":"cleanupWorkflowExecutions"}
+n8n            | 2025-10-14T22:51:53.715Z | debug | Legacy SQLite execution recovery completed. {"scopes":["legacy-sqlite-execution-recovery"],"file":"legacy-sqlite-execution-recovery.service.js","function":"cleanupWorkflowExecutions"}
+n8n            | 2025-10-14T22:51:54.539Z | debug | Started Redis client client(bull) {"scopes":["redis","scaling"],"type":"client(bull)","host":"redis","port":6379,"file":"redis-client.service.js","function":"createRegularClient"}
+n8n            | 2025-10-14T22:51:54.544Z | debug | Started Redis client subscriber(bull) {"scopes":["redis","scaling"],"type":"subscriber(bull)","host":"redis","port":6379,"file":"redis-client.service.js","function":"createRegularClient"}
+n8n            | 2025-10-14T22:51:54.545Z | debug | Queue setup completed {"scopes":["scaling"],"file":"scaling.service.js","function":"setupQueue"}
+n8n            | 2025-10-14T22:51:54.823Z | debug | Completed queue recovery check, no dangling executions {"scopes":["scaling"],"file":"scaling.service.js","function":"recoverFromQueue"}
+n8n            | 2025-10-14T22:51:54.823Z | debug | Scheduled queue recovery check for next 180 min {"scopes":["scaling"],"file":"scaling.service.js","function":"scheduleQueueRecovery"}
+n8n            | 2025-10-14T22:51:55.600Z | debug | OIDC login is disabled. {"file":"oidc.service.ee.js","function":"init"}
+n8n            | 2025-10-14T22:51:55.606Z | info | Registered runner "JS Task Runner" (xC13RJrpLxoglsJhamIZr)  {"file":"task-broker-ws-server.js","function":"onMessage"}
+n8n            | 2025-10-14T22:51:55.661Z | debug | Registered a "reload-license" event handler on License#reload {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:51:55.662Z | debug | Registered a "relay-execution-lifecycle-event" event handler on Push#handleRelayExecutionLifecycleEvent {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:51:55.662Z | debug | Registered a "reload-overwrite-credentials" event handler on CredentialsOverwrites#reloadOverwriteCredentials {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:51:55.662Z | debug | Registered a "clear-test-webhooks" event handler on TestWebhooks#handleClearTestWebhooks {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:51:55.662Z | debug | Registered a "display-workflow-activation" event handler on ActiveWorkflowManager#handleDisplayWorkflowActivation {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:51:55.662Z | debug | Registered a "display-workflow-deactivation" event handler on ActiveWorkflowManager#handleDisplayWorkflowDeactivation {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:51:55.663Z | debug | Registered a "display-workflow-activation-error" event handler on ActiveWorkflowManager#handleDisplayWorkflowActivationError {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:51:55.663Z | debug | Registered a "add-webhooks-triggers-and-pollers" event handler on ActiveWorkflowManager#handleAddWebhooksTriggersAndPollers {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:51:55.663Z | debug | Registered a "remove-triggers-and-pollers" event handler on ActiveWorkflowManager#handleRemoveTriggersAndPollers {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:51:55.663Z | debug | Registered a "restart-event-bus" event handler on MessageEventBus#restart {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:51:55.663Z | debug | Registered a "response-to-get-worker-status" event handler on WorkerStatusService#handleWorkerStatusResponse {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:51:55.664Z | debug | Registered a "community-package-update" event handler on CommunityPackagesService#handleInstallEvent {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:51:55.664Z | debug | Registered a "community-package-install" event handler on CommunityPackagesService#handleInstallEvent {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:51:55.664Z | debug | Registered a "community-package-uninstall" event handler on CommunityPackagesService#handleUninstallEvent {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:51:55.664Z | debug | Registered a "reload-saml-config" event handler on SamlService#reload {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:51:55.664Z | debug | Registered a "reload-oidc-config" event handler on OidcService#reload {"scopes":["pubsub"],"file":"pubsub.registry.js","function":"init"}
+n8n            | 2025-10-14T22:51:55.740Z | debug | Initializing event bus... {"file":"message-event-bus.js","function":"initialize"}
+n8n            | 2025-10-14T22:51:55.741Z | debug | Initializing event writer {"file":"message-event-bus.js","function":"initialize"}
+n8n            | 2025-10-14T22:51:55.745Z | debug | Checking for unsent event messages {"file":"message-event-bus.js","function":"initialize"}
+n8n            | 2025-10-14T22:51:55.801Z | debug | Start logging into /home/node/.n8n/n8nEventLog.log  {"file":"message-event-bus.js","function":"initialize"}
+n8n            | 2025-10-14T22:51:55.802Z | debug | MessageEventBus initialized {"file":"message-event-bus.js","function":"initialize"}
+n8n            | 2025-10-14T22:51:55.805Z | info | Version: 1.115.3 {"file":"abstract-server.js","function":"start"}
+n8n            | 2025-10-14T22:51:55.805Z | debug | Server ID: main-8959cc9ce03b {"file":"server.js","function":"start"}
+n8n            | 2025-10-14T22:51:55.809Z | debug | Soft-deletion every 60 minutes {"scopes":["pruning"],"file":"executions-pruning.service.js","function":"scheduleRollingSoftDeletions"}
+n8n            | 2025-10-14T22:51:55.810Z | debug | Hard-deletion in next 15 minutes {"scopes":["pruning"],"file":"executions-pruning.service.js","function":"scheduleNextHardDeletion"}
+n8n            | 2025-10-14T22:51:55.810Z | debug | Started pruning timers {"scopes":["pruning"],"file":"executions-pruning.service.js","function":"startPruning"}
+n8n            | 2025-10-14T22:51:55.816Z [Rudder] debug: in flush
+n8n            | 2025-10-14T22:51:55.821Z [Rudder] debug: no existing flush timer, creating new one
+n8n            | (node:1) Warning: Setting the NODE_TLS_REJECT_UNAUTHORIZED environment variable to '0' makes TLS connections and HTTPS requests insecure by disabling certificate verification.
+n8n            | (Use `node --trace-warnings ...` to show where the warning was created)
+n8n            | 2025-10-14T22:51:55.869Z | info |
+n8n            | Editor is now accessible via:
+n8n            | http://localhost:5678 {"file":"base-command.js","function":"log"}
+n8n            | 2025-10-14T22:51:55.933Z [Rudder] error: Response error code: ECONNREFUSED
+n8n            | 2025-10-14T22:51:56.146Z [Rudder] error: Response error code: ECONNREFUSED
+n8n            | 2025-10-14T22:51:56.599Z [Rudder] error: Response error code: ECONNREFUSED
+n8n            | 2025-10-14T22:51:57.531Z [Rudder] error: Error: ECONNREFUSED
+n8n            | 2025-10-14T22:51:57.532Z | error | connect ECONNREFUSED 172.67.68.102:443 {"file":"error-reporter.js","function":"defaultReport"}
+n8n            | 2025-10-14T22:51:57.532Z | error | connect ECONNREFUSED 172.67.68.102:443 {"file":"error-reporter.js","function":"defaultReport"}
+n8n            | 2025-10-14T22:52:05.822Z [Rudder] debug: in flush
+n8n            | 2025-10-14T22:52:05.822Z [Rudder] debug: cancelling existing flushTimer...
+n8n            | 2025-10-14T22:52:05.823Z | error | connect ECONNREFUSED 172.67.68.102:443 {"file":"error-reporter.js","function":"defaultReport"}
+n8n            | 2025-10-14T22:52:05.824Z | error | connect ECONNREFUSED 172.67.68.102:443 {"file":"error-reporter.js","function":"defaultReport"}
+n8n            | Error fetching feature flags Error [PostHogFetchNetworkError]: Network error while fetching PostHog
+n8n            |     at new PostHogFetchNetworkError (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/posthog-node@3.2.1/node_modules/posthog-core/src/index.ts:41:5)
+n8n            |     at PostHog.<anonymous> (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/posthog-node@3.2.1/node_modules/posthog-core/src/index.ts:546:17)
+n8n            |     at step (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/posthog-node@3.2.1/node_modules/node_modules/tslib/tslib.es6.js:102:23)
+n8n            |     at Object.throw (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/posthog-node@3.2.1/node_modules/node_modules/tslib/tslib.es6.js:83:53)
+n8n            |     at rejected (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/posthog-node@3.2.1/node_modules/node_modules/tslib/tslib.es6.js:74:65)
+n8n            |     at processTicksAndRejections (node:internal/process/task_queues:105:5) {
+n8n            |   error: TypeError: fetch failed
+n8n            |       at node:internal/deps/undici/undici:13510:13
+n8n            |       at processTicksAndRejections (node:internal/process/task_queues:105:5) {
+n8n            |     [cause]: Error: connect ECONNREFUSED 172.67.68.102:443
+n8n            |         at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1637:16) {
+n8n            |       errno: -111,
+n8n            |       code: 'ECONNREFUSED',
+n8n            |       syscall: 'connect',
+n8n            |       address: '172.67.68.102',
+n8n            |       port: 443
+n8n            |     }
+n8n            |   },
+n8n            |   [cause]: TypeError: fetch failed
+n8n            |       at node:internal/deps/undici/undici:13510:13
+n8n            |       at processTicksAndRejections (node:internal/process/task_queues:105:5) {
+n8n            |     [cause]: Error: connect ECONNREFUSED 172.67.68.102:443
+n8n            |         at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1637:16) {
+n8n            |       errno: -111,
+n8n            |       code: 'ECONNREFUSED',
+n8n            |       syscall: 'connect',
+n8n            |       address: '172.67.68.102',
+n8n            |       port: 443
+n8n            |     }
+n8n            |   }
+n8n            | }
+n8n            | 2025-10-14T22:52:17.744Z | debug | Skipped browserId check on /rest/push {"file":"auth.service.js","function":"resolveJwt"}
+n8n            | 2025-10-14T22:52:17.746Z | debug | Add editor-UI session {"pushRef":"6az9icp1mw","file":"abstract.push.js","function":"add"}
+n8n            | 2025-10-14T22:52:23.535Z | debug | Execution added {"executionId":"6","file":"active-executions.js","function":"add"}
+n8n            | 2025-10-14T22:52:23.549Z | info | Enqueued execution 6 (job 6) {"scopes":["scaling"],"executionId":"6","jobId":"6","file":"scaling.service.js","function":"addJob"}
+n8n            | 2025-10-14T22:52:24.345Z | debug | Received pubsub msg: relay-execution-lifecycle-event (executionStarted) {"scopes":["scaling","pubsub"],"msg":"relay-execution-lifecycle-event","channel":"n8n.commands","type":"executionStarted","executionId":"6","file":"subscriber.service.js","function":"parseMessage"}
+n8n            | 2025-10-14T22:52:24.346Z | debug | Pushed to frontend: executionStarted {"dataType":"executionStarted","pushRefs":"6az9icp1mw","file":"abstract.push.js","function":"sendTo"}
+n8n            | 2025-10-14T22:52:24.349Z | debug | Received pubsub msg: relay-execution-lifecycle-event (nodeExecuteBefore) {"scopes":["scaling","pubsub"],"msg":"relay-execution-lifecycle-event","channel":"n8n.commands","type":"nodeExecuteBefore","executionId":"6","file":"subscriber.service.js","function":"parseMessage"}
+n8n            | 2025-10-14T22:52:24.349Z | debug | Pushed to frontend: nodeExecuteBefore {"dataType":"nodeExecuteBefore","pushRefs":"6az9icp1mw","file":"abstract.push.js","function":"sendTo"}
+n8n            | 2025-10-14T22:52:24.573Z | debug | Received pubsub msg: relay-execution-lifecycle-event (nodeExecuteBefore) {"scopes":["scaling","pubsub"],"msg":"relay-execution-lifecycle-event","channel":"n8n.commands","type":"nodeExecuteBefore","executionId":"6","file":"subscriber.service.js","function":"parseMessage"}
+n8n            | 2025-10-14T22:52:24.573Z | debug | Pushed to frontend: nodeExecuteBefore {"dataType":"nodeExecuteBefore","pushRefs":"6az9icp1mw","file":"abstract.push.js","function":"sendTo"}
+n8n            | 2025-10-14T22:52:24.576Z | debug | Received pubsub msg: relay-execution-lifecycle-event (nodeExecuteAfter) {"scopes":["scaling","pubsub"],"msg":"relay-execution-lifecycle-event","channel":"n8n.commands","type":"nodeExecuteAfter","executionId":"6","file":"subscriber.service.js","function":"parseMessage"}
+n8n            | 2025-10-14T22:52:24.577Z | debug | Pushed to frontend: nodeExecuteAfter {"dataType":"nodeExecuteAfter","pushRefs":"6az9icp1mw","file":"abstract.push.js","function":"sendTo"}
+n8n            | 2025-10-14T22:52:24.577Z | debug | Received pubsub msg: relay-execution-lifecycle-event (nodeExecuteAfterData) {"scopes":["scaling","pubsub"],"msg":"relay-execution-lifecycle-event","channel":"n8n.commands","type":"nodeExecuteAfterData","executionId":"6","file":"subscriber.service.js","function":"parseMessage"}
+n8n            | 2025-10-14T22:52:24.577Z | debug | Pushed to frontend: nodeExecuteAfterData {"dataType":"nodeExecuteAfterData","pushRefs":"6az9icp1mw","file":"abstract.push.js","function":"sendTo"}
+n8n            | 2025-10-14T22:52:25.816Z | debug | Received pubsub msg: relay-execution-lifecycle-event (nodeExecuteBefore) {"scopes":["scaling","pubsub"],"msg":"relay-execution-lifecycle-event","channel":"n8n.commands","type":"nodeExecuteBefore","executionId":"6","file":"subscriber.service.js","function":"parseMessage"}
+n8n            | 2025-10-14T22:52:25.816Z | debug | Pushed to frontend: nodeExecuteBefore {"dataType":"nodeExecuteBefore","pushRefs":"6az9icp1mw","file":"abstract.push.js","function":"sendTo"}
+n8n            | 2025-10-14T22:52:52.066Z | debug | Querying database for waiting executions {"scopes":["waiting-executions"],"file":"wait-tracker.js","function":"getWaitingExecutions"}
+
+
+
+
++++++++++++++++++++++++++++++++
+
+
 FROM n8nio/n8n:latest
 
 USER root
