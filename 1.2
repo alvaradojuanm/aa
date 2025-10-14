@@ -1,3 +1,67 @@
+FROM n8nio/n8n:latest
+
+ARG HTTP_PROXY=http://10.132.222.73:9090
+ARG HTTPS_PROXY=http://10.132.222.73:9090
+
+USER root
+
+# Configurar proxy para npm durante el build
+RUN npm config set proxy ${HTTP_PROXY} && \
+    npm config set https-proxy ${HTTPS_PROXY} && \
+    npm config set strict-ssl false
+
+# Instalar proxy-agent (compatible con undici/fetch de Node.js 18+)
+RUN npm install -g proxy-agent
+
+# Limpiar config de npm
+RUN npm config delete proxy && \
+    npm config delete https-proxy
+
+# Crear módulo que parchea fetch globalmente ANTES de que n8n inicie
+RUN mkdir -p /opt/proxy-setup && \
+    cat > /opt/proxy-setup/index.js << 'PROXYPATCH'
+const { ProxyAgent } = require('proxy-agent');
+
+const proxyUrl = process.env.HTTPS_PROXY || process.env.HTTP_PROXY;
+
+if (proxyUrl) {
+  const agent = new ProxyAgent(proxyUrl);
+  
+  // Parchear fetch global
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = function(url, options = {}) {
+    if (typeof url === 'string' && url.startsWith('https://')) {
+      options.dispatcher = agent;
+    }
+    return originalFetch(url, options);
+  };
+  
+  console.log('✓ Proxy agent configurado:', proxyUrl);
+} else {
+  console.log('⚠ No se encontró configuración de proxy');
+}
+PROXYPATCH
+
+# Script de inicio
+RUN cat > /usr/local/bin/start-n8n.sh << 'STARTSCRIPT'
+#!/bin/sh
+export HTTP_PROXY=http://10.132.222.73:9090
+export HTTPS_PROXY=http://10.132.222.73:9090
+export NO_PROXY=localhost,127.0.0.1,postgres,redis
+export NODE_TLS_REJECT_UNAUTHORIZED=0
+
+# Iniciar con el patch de proxy
+exec node -r /opt/proxy-setup/index.js /usr/local/bin/n8n "$@"
+STARTSCRIPT
+
+RUN chmod +x /usr/local/bin/start-n8n.sh
+
+USER node
+
+ENTRYPOINT ["/usr/local/bin/start-n8n.sh"]
+
+
++++++++++++++
 root@sapl8464:/home/dockeruser/n8n-worker# nano Dockerfile
 root@sapl8464:/home/dockeruser/n8n-worker# docker-compose build --no-cache
 postgres uses an image, skipping
