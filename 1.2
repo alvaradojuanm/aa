@@ -1,4 +1,106 @@
+CONFIGURACIÓN ALTERNATIVA: Usando fqdn con comodines
 
+! ============================================
+! OPCIÓN CON WILDCARDS (*.googleapis.com)
+! ============================================
+
+object network GOOGLE-APIS-WILDCARD
+ fqdn *.googleapis.com
+ description Todos los subdominios de googleapis.com
+
+! Servidor n8n
+object network N8N-SERVER
+ host 10.135.194.42
+
+! Regla de acceso
+access-list ACL-INSIDE-OUT extended permit tcp object N8N-SERVER object GOOGLE-APIS-WILDCARD eq 443
+
+++++++++++++++ o +++++++++++++++++++++
+
+Opción 1: Network Objects con FQDN (Cisco ASA 8.4+)
+
+! ============================================
+! CONFIGURACIÓN CON FQDN PARA GOOGLE APIS
+! Servidor: n8n (10.135.194.42)
+! ============================================
+
+! Servidor origen
+object network N8N-SERVER
+ host 10.135.194.42
+ description Servidor de automatizacion n8n
+
+! ============================================
+! OBJETOS FQDN PARA GOOGLE CLOUD
+! ============================================
+
+! Google Gemini AI
+object network GOOGLE-GEMINI-API
+ fqdn v4 generativelanguage.googleapis.com
+ description Google Gemini AI API
+
+! Vertex AI (si usas alguna región específica)
+object network VERTEX-AI-US-CENTRAL
+ fqdn v4 us-central1-aiplatform.googleapis.com
+ description Vertex AI US Central region
+
+object network VERTEX-AI-US-EAST
+ fqdn v4 us-east1-aiplatform.googleapis.com
+ description Vertex AI US East region
+
+! Google APIs genérico (comodín)
+object network GOOGLE-APIS-GENERAL
+ fqdn v4 googleapis.com
+ description Google APIs general domain
+
+! ============================================
+! GRUPO DE OBJETOS (todos los destinos)
+! ============================================
+object-group network GOOGLE-AI-APIS-FQDN
+ description Google AI APIs destinations
+ network-object object GOOGLE-GEMINI-API
+ network-object object VERTEX-AI-US-CENTRAL
+ network-object object VERTEX-AI-US-EAST
+ network-object object GOOGLE-APIS-GENERAL
+
+! ============================================
+! ACCESS-LIST (regla de acceso)
+! ============================================
+access-list ACL-INSIDE-OUT extended permit tcp object N8N-SERVER object-group GOOGLE-AI-APIS-FQDN eq 443
+access-list ACL-INSIDE-OUT extended permit tcp object N8N-SERVER object-group GOOGLE-AI-APIS-FQDN eq https
+
+! ============================================
+! APLICAR LA ACL (si aún no está aplicada)
+! ============================================
+access-group ACL-INSIDE-OUT in interface inside
+
+! ============================================
+! HABILITAR DNS INSPECTION (CRÍTICO para FQDN)
+! ============================================
+policy-map global_policy
+ class inspection_default
+  inspect dns preset_dns_map
+
+! Configurar DNS servers (si no están configurados)
+dns domain-lookup inside
+dns server-group DefaultDNS
+ name-server 10.132.214.74
+ name-server 8.8.8.8
+
+! ============================================
+! VERIFICACIÓN Y MONITOREO
+! ============================================
+! Para verificar la resolución FQDN:
+! show xlate | include generativelanguage
+! show conn | include 10.135.194.42
+
+! Para ver logs en tiempo real:
+! terminal monitor
+! logging enable
+! logging trap debugging
+
+
+
+++++++++++++++++++++++++++++++++++++++++++++
 N8n no puede conectarse a Internet a través del proxy corporativo
 
 /usr/local/lib/node_modules/n8n/node_modules/n8n-core/dist/execution-engine/node-execution-context/utils/request-helper-functions.js
