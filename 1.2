@@ -1,4 +1,44 @@
 
+N8n no puede conectarse a Internet a través del proxy corporativo
+
+/usr/local/lib/node_modules/n8n/node_modules/n8n-core/dist/execution-engine/node-execution-context/utils/request-helper-functions.js
+
+
+/usr/local/lib/node_modules/n8n/node_modules/n8n-core/dist/execution-engine/node-execution-context/utils/request-helper-functions.js
+
+Después de la línea 480
+
+imagen
+imagen
+737×338 7,45 KB
+También elimino 2 líneas en el mismo archivo (sed replace by nothing)
+
+redirectedRequest.agent = redirectAgent; ==> (reemplazar por una cadena vacía)
+redirectedRequest.agents.https = redirectAgent; ==> (reemplazar por una cadena vacía)
+
+Con estas dos actualizaciones en este archivo, puedo usar mi proxy configurado en la variable ENV y no usar el proxy para el sitio que también configuré en la variable ENV no_proxy.
+
+-----------------------
+Entonces tienes el mismo problema que yo
+
+Para resolverlo, construí mi dockerimage con Dockerfile. Uso el comando sed para agregar este fragmento de código en el archivo Node request-helper-functions.ts.js.
+
+Primero verifico si necesito usar un entorno proxy (con un booleano) y, si es así, uso https-proxy-agent para configurar la variable proxy.
+
+const no_proxy = process.env.no_proxy.split(',');
+    var use_proxy = true;
+    for (let i = 0; i < no_proxy.length; i++){
+        if (requestObject.uri.includes(no_proxy[i]) ) {
+            use_proxy = false;
+        }
+    }
+    if (use_proxy) {    
+        const { HttpsProxyAgent } = require("https-proxy-agent");
+        const agent = new HttpsProxyAgent(process.env.http_proxy);
+        axiosConfig.httpAgent = agent;
+        axiosConfig.httpsAgent = agent;
+        axiosConfig.proxy = false;
+    }
 
 
 
