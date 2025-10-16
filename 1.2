@@ -1,3 +1,83 @@
+################################
+Script en ASAFPR4K-BM-INTERNET #
+Ip de acceso: 10.132.75.4      #
+################################
+
+
+
+ASAFPR4K-BM-INTERNET/pri/act#
+
+!
+!
+
+object-group network SERV_N8N_POC
+  description *** Servidores N8N POC***
+  network-object host 10.135.194.42
+  network-object host 10.132.212.4
+  network-object host 10.135.197.100
+  network-object host 10.135.197.101
+
+object network GL.GOOGLEAPIS.COM
+ fqdn generativelanguage.googleapis.com
+
+object network AIPLATFORM.GOOGLEAPIS.COM
+ fqdn aiplatform.googleapis.com
+
+
+object-group network GOOGLE_API_CLOUD
+ description *** Servicio CLOUD GOOGLE APIS ***
+ network-object object GL.GOOGLEAPIS.COM
+ network-object object AIPLATFORM.GOOGLEAPIS.COM
+
+
+!
+!
+
+access-list acl_internet extended permit tcp object-group SERV_N8N_POC object-group GOOGLE_API_CLOUD
+
+!
+!
+
+################################
+        ### ROLLBACK ###
+################################
+################################
+Script en ASAFPR4K-BM-INTERNET #
+Ip de acceso: 10.132.75.4      #
+################################
+
+
+
+ASAFPR4K-BM-INTERNET/pri/act#
+
+!
+!
+
+no access-list acl_internet extended permit tcp object-group SERV_N8N_POC object-group GOOGLE_API_CLOUD
+
+!
+!
+no object-group network SERV_N8N_POC
+
+no object-group network GOOGLE_API_CLOUD
+
+no object network GL.GOOGLEAPIS.COM
+
+no object network AIPLATFORM.GOOGLEAPIS.COM
+
+
+!
+!
+
+#########################################
+
+
+
+
+
+++++++++++++++++++++++++++++++++++++++++++++
+------------------------------------------
+
 CONFIGURACIÓN ALTERNATIVA: Usando fqdn con comodines
 
 ! ============================================
