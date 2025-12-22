@@ -1,0 +1,1198 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análisis Comparativo: AWS vs GCP vs On-Premise - Banesco</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            overflow-x: hidden;
+        }
+
+        .presentation {
+            width: 100vw;
+            height: 100vh;
+            overflow-y: scroll;
+            scroll-snap-type: y mandatory;
+            scroll-behavior: smooth;
+        }
+
+        .slide {
+            width: 100vw;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            scroll-snap-align: start;
+            position: relative;
+        }
+
+        .slide-content {
+            max-width: 1400px;
+            width: 100%;
+            background: white;
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        h1 {
+            font-size: 3em;
+            color: #1e3c72;
+            margin-bottom: 20px;
+            text-align: center;
+            border-bottom: 4px solid #ff6b35;
+            padding-bottom: 20px;
+        }
+
+        h2 {
+            font-size: 2.2em;
+            color: #2a5298;
+            margin: 30px 0 20px 0;
+            border-left: 6px solid #ff6b35;
+            padding-left: 20px;
+        }
+
+        h3 {
+            font-size: 1.5em;
+            color: #1e3c72;
+            margin: 20px 0 15px 0;
+        }
+
+        .subtitle {
+            font-size: 1.3em;
+            color: #666;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            margin: 40px 0;
+        }
+
+        .provider-card {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .provider-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .provider-card.aws {
+            border-top: 5px solid #FF9900;
+        }
+
+        .provider-card.gcp {
+            border-top: 5px solid #4285F4;
+        }
+
+        .provider-card.onprem {
+            border-top: 5px solid #28a745;
+        }
+
+        .provider-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .provider-logo {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .provider-name {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #1e3c72;
+        }
+
+        .cost-section {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        .cost-label {
+            font-size: 0.9em;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .cost-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #1e3c72;
+        }
+
+        .cost-detail {
+            font-size: 0.95em;
+            color: #555;
+            margin-top: 8px;
+            line-height: 1.6;
+        }
+
+        .pros-cons {
+            margin-top: 20px;
+        }
+
+        .pros, .cons {
+            margin: 15px 0;
+        }
+
+        .pros h4, .cons h4 {
+            font-size: 1.1em;
+            margin-bottom: 10px;
+        }
+
+        .pros h4 {
+            color: #28a745;
+        }
+
+        .cons h4 {
+            color: #dc3545;
+        }
+
+        .pros ul, .cons ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .pros li:before {
+            content: "✓ ";
+            color: #28a745;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        .cons li:before {
+            content: "✗ ";
+            color: #dc3545;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        li {
+            margin: 8px 0;
+            line-height: 1.6;
+        }
+
+        .requirements-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 30px 0;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .requirements-table th {
+            background: #1e3c72;
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: bold;
+        }
+
+        .requirements-table td {
+            padding: 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .requirements-table tr:hover {
+            background: #f5f7fa;
+        }
+
+        .check {
+            color: #28a745;
+            font-size: 1.3em;
+        }
+
+        .cross {
+            color: #dc3545;
+            font-size: 1.3em;
+        }
+
+        .warning {
+            color: #ffc107;
+            font-size: 1.3em;
+        }
+
+        .recommendation-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 40px;
+            margin: 40px 0;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+        }
+
+        .recommendation-box h2 {
+            color: white;
+            border-left-color: #ffd700;
+        }
+
+        .recommendation-box p {
+            font-size: 1.2em;
+            line-height: 1.8;
+            margin: 15px 0;
+        }
+
+        .highlight {
+            background: #ffd700;
+            color: #1e3c72;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .roi-box {
+            background: #e8f5e9;
+            border-left: 6px solid #28a745;
+            padding: 25px;
+            margin: 25px 0;
+            border-radius: 8px;
+        }
+
+        .roi-box h3 {
+            color: #28a745;
+            margin-bottom: 15px;
+        }
+
+        .risk-box {
+            background: #ffebee;
+            border-left: 6px solid #dc3545;
+            padding: 25px;
+            margin: 25px 0;
+            border-radius: 8px;
+        }
+
+        .risk-box h3 {
+            color: #dc3545;
+            margin-bottom: 15px;
+        }
+
+        .slide-number {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.9);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            color: #1e3c72;
+        }
+
+        .architecture-box {
+            background: #f8f9fa;
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        .timeline {
+            display: flex;
+            justify-content: space-between;
+            margin: 30px 0;
+            position: relative;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 30px;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: #1e3c72;
+            z-index: 0;
+        }
+
+        .timeline-item {
+            flex: 1;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .timeline-marker {
+            width: 60px;
+            height: 60px;
+            background: #1e3c72;
+            border-radius: 50%;
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .timeline-content {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        @media (max-width: 1200px) {
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2.2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation">
+        <!-- Slide 1: Título -->
+        <div class="slide">
+            <div class="slide-content">
+                <h1>🏦 Análisis Comparativo de Plataformas de IA para Banca</h1>
+                <p class="subtitle">AWS Bedrock vs GCP Vertex AI vs Infraestructura On-Premise</p>
+                <div style="text-align: center; margin: 50px 0;">
+                    <h3 style="color: #666;">Banesco - Análisis Técnico y Financiero 2025</h3>
+                    <p style="font-size: 1.2em; color: #888; margin-top: 20px;">Evaluación de costos reales, requisitos de infraestructura y ROI</p>
+                </div>
+            </div>
+            <div class="slide-number">Slide 1 de 7</div>
+        </div>
+
+        <!-- Slide 2: Escenario 1 - Sin Integración -->
+        <div class="slide">
+            <div class="slide-content">
+                <h1>📊 Escenario 1: Uso Simple (Solo API)</h1>
+                <p class="subtitle">Sin integración a sistemas bancarios - Solo consumo de modelos LLM</p>
+                
+                <div class="comparison-grid">
+                    <!-- AWS Bedrock -->
+                    <div class="provider-card aws">
+                        <div class="provider-header">
+                            <div class="provider-logo">🟧</div>
+                            <div class="provider-name">AWS Bedrock</div>
+                        </div>
+                        
+                        <div class="cost-section">
+                            <div class="cost-label">Costo Mensual Estimado</div>
+                            <div class="cost-value">$500-2,000</div>
+                            <div class="cost-detail">
+                                • Claude 3.5 Sonnet: $3/M tokens input, $15/M output<br>
+                                • 500 usuarios × 10 queries/día<br>
+                                • ~150K queries/mes<br>
+                                • Promedio 1K tokens/query
+                            </div>
+                        </div>
+
+                        <div class="pros-cons">
+                            <div class="pros">
+                                <h4>✓ Ventajas</h4>
+                                <ul>
+                                    <li>Acceso a Claude (mejor código)</li>
+                                    <li>Múltiples modelos (Llama, Titan)</li>
+                                    <li>Infraestructura escalable</li>
+                                </ul>
+                            </div>
+                            <div class="cons">
+                                <h4>✗ Desventajas</h4>
+                                <ul>
+                                    <li>Requiere nueva conectividad</li>
+                                    <li>Sin billing establecido</li>
+                                    <li>6-12 meses setup</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- GCP Vertex AI -->
+                    <div class="provider-card gcp">
+                        <div class="provider-header">
+                            <div class="provider-logo">🔵</div>
+                            <div class="provider-name">GCP Vertex AI</div>
+                        </div>
+                        
+                        <div class="cost-section">
+                            <div class="cost-label">Costo Mensual Estimado</div>
+                            <div class="cost-value">$450-750</div>
+                            <div class="cost-detail">
+                                • Gemini 2.5 Flash: $0.15/M input, $0.60/M output<br>
+                                • 500 usuarios × 10 queries/día<br>
+                                • ~150K queries/mes<br>
+                                • Rate limiting natural
+                            </div>
+                        </div>
+
+                        <div class="pros-cons">
+                            <div class="pros">
+                                <h4>✓ Ventajas</h4>
+                                <ul>
+                                    <li>✅ YA FUNCIONA (lanzamiento 5 enero)</li>
+                                    <li>✅ Conectividad aprobada</li>
+                                    <li>✅ Billing establecido</li>
+                                    <li>Landing zone configurada</li>
+                                    <li>30-40% más económico</li>
+                                </ul>
+                            </div>
+                            <div class="cons">
+                                <h4>✗ Desventajas</h4>
+                                <ul>
+                                    <li>Rate limiting por costos</li>
+                                    <li>Menor variedad modelos vs AWS</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- On-Premise -->
+                    <div class="provider-card onprem">
+                        <div class="provider-header">
+                            <div class="provider-logo">🟢</div>
+                            <div class="provider-name">On-Premise</div>
+                        </div>
+                        
+                        <div class="cost-section">
+                            <div class="cost-label">Inversión Inicial</div>
+                            <div class="cost-value">$150,000</div>
+                            <div class="cost-detail">
+                                • Servidor GPU (2x A100 40GB): $100K<br>
+                                • Software/Licencias: $20K<br>
+                                • Setup/Integración: $30K
+                            </div>
+                        </div>
+
+                        <div class="cost-section">
+                            <div class="cost-label">Costo Mensual</div>
+                            <div class="cost-value">~$2,000</div>
+                            <div class="cost-detail">
+                                • Electricidad (2x700W GPUs): ~$1,000<br>
+                                • Mantenimiento: ~$500<br>
+                                • Soporte/Personal: ~$500<br>
+                                • <strong>Queries ILIMITADAS</strong>
+                            </div>
+                        </div>
+
+                        <div class="pros-cons">
+                            <div class="pros">
+                                <h4>✓ Ventajas</h4>
+                                <ul>
+                                    <li>Control total de datos</li>
+                                    <li>Sin rate limiting</li>
+                                    <li>Costos predecibles</li>
+                                    <li>ROI 12-15 meses</li>
+                                </ul>
+                            </div>
+                            <div class="cons">
+                                <h4>✗ Desventajas</h4>
+                                <ul>
+                                    <li>Inversión inicial alta</li>
+                                    <li>Setup 3-4 meses</li>
+                                    <li>Requiere personal técnico</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="roi-box">
+                    <h3>💰 Análisis ROI - Escenario Simple</h3>
+                    <p><strong>AWS:</strong> $500-2K/mes × 12 = $6K-24K/año + $100K setup = <span class="highlight">$106K-124K primer año</span></p>
+                    <p><strong>GCP:</strong> $450-750/mes × 12 = $5.4K-9K/año + $0 setup = <span class="highlight">$5.4K-9K primer año ✅</span></p>
+                    <p><strong>On-Premise:</strong> $150K setup + $24K/año = <span class="highlight">$174K primer año</span> (pero queries ilimitadas)</p>
+                    <p style="margin-top: 15px; font-weight: bold; color: #28a745;">
+                        Para escenario simple: GCP es OBVIAMENTE más económico al tener infraestructura lista.
+                    </p>
+                </div>
+            </div>
+            <div class="slide-number">Slide 2 de 7</div>
+        </div>
+
+        <!-- Slide 3: Escenario 2 - Con Integración -->
+        <div class="slide">
+            <div class="slide-content">
+                <h1>🔐 Escenario 2: Integración Bancaria Completa</h1>
+                <p class="subtitle">Plataforma AI integrada con sistemas core del banco</p>
+                
+                <h2>Requisitos de Infraestructura</h2>
+                <table class="requirements-table">
+                    <thead>
+                        <tr>
+                            <th>Componente</th>
+                            <th>AWS Bedrock</th>
+                            <th>GCP Vertex AI</th>
+                            <th>On-Premise</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>VPN Dedicada</strong></td>
+                            <td><span class="warning">⚠️</span> Requiere nueva ($50K-100K)</td>
+                            <td><span class="warning">⚠️</span> Requiere nueva ($50K-100K)</td>
+                            <td><span class="check">✓</span> No necesaria</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Security Review</strong></td>
+                            <td><span class="cross">✗</span> 6-12 meses</td>
+                            <td><span class="cross">✗</span> 6-12 meses</td>
+                            <td><span class="check">✓</span> Interno (1-2 meses)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>API Gateway</strong></td>
+                            <td><span class="warning">⚠️</span> Nueva implementación</td>
+                            <td><span class="warning">⚠️</span> Nueva implementación</td>
+                            <td><span class="check">✓</span> Control total</td>
+                        </tr>
+                        <tr>
+                            <td><strong>IAM/Auth Integration</strong></td>
+                            <td><span class="warning">⚠️</span> Complejo (LDAP→AWS)</td>
+                            <td><span class="warning">⚠️</span> Complejo (LDAP→GCP)</td>
+                            <td><span class="check">✓</span> LDAP directo</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Data Residency</strong></td>
+                            <td><span class="cross">✗</span> Data en tránsito a AWS</td>
+                            <td><span class="cross">✗</span> Data en tránsito a GCP</td>
+                            <td><span class="check">✓</span> 100% local</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Audit Trails</strong></td>
+                            <td><span class="warning">⚠️</span> CloudWatch (complejo)</td>
+                            <td><span class="warning">⚠️</span> Logging (complejo)</td>
+                            <td><span class="check">✓</span> Control total</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Disaster Recovery</strong></td>
+                            <td><span class="warning">⚠️</span> Depende de AWS</td>
+                            <td><span class="warning">⚠️</span> Depende de GCP</td>
+                            <td><span class="check">✓</span> Backup local</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h2 style="margin-top: 40px;">Costos Completos - Integración Bancaria</h2>
+                <div class="comparison-grid">
+                    <div class="provider-card aws">
+                        <div class="provider-header">
+                            <div class="provider-name">AWS Bedrock</div>
+                        </div>
+                        <div class="cost-section">
+                            <div class="cost-label">Setup Completo</div>
+                            <div class="cost-value">$100K-200K</div>
+                            <div class="cost-detail">
+                                • VPN/Networking: $50K-100K<br>
+                                • Security approvals: 6-12 meses<br>
+                                • IAM integration: $20K-40K<br>
+                                • API Gateway: $10K-30K<br>
+                                • Testing/Migration: $20K-30K
+                            </div>
+                        </div>
+                        <div class="cost-section">
+                            <div class="cost-label">Mensual Operativo</div>
+                            <div class="cost-value">$1,500-3,000</div>
+                            <div class="cost-detail">
+                                • Bedrock API: $500-2K<br>
+                                • VPN/Conectividad: $500-800<br>
+                                • Monitoreo/Support: $500
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="provider-card gcp">
+                        <div class="provider-header">
+                            <div class="provider-name">GCP Vertex AI</div>
+                        </div>
+                        <div class="cost-section">
+                            <div class="cost-label">Setup Completo</div>
+                            <div class="cost-value">$80K-150K</div>
+                            <div class="cost-detail">
+                                • VPN/Networking: $50K-100K<br>
+                                • Security approvals: 6-12 meses<br>
+                                • IAM integration: $15K-30K<br>
+                                • API Gateway: $10K-20K<br>
+                                • <em>Menor porque ya existe relación</em>
+                            </div>
+                        </div>
+                        <div class="cost-section">
+                            <div class="cost-label">Mensual Operativo</div>
+                            <div class="cost-value">$1,200-2,500</div>
+                            <div class="cost-detail">
+                                • Vertex AI: $450-750<br>
+                                • VPN/Conectividad: $500-800<br>
+                                • Monitoreo/Support: $250-500<br>
+                                • <em>Más económico en API</em>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="provider-card onprem">
+                        <div class="provider-header">
+                            <div class="provider-name">On-Premise</div>
+                        </div>
+                        <div class="cost-section">
+                            <div class="cost-label">Inversión Inicial</div>
+                            <div class="cost-value">$150,000</div>
+                            <div class="cost-detail">
+                                • Hardware GPU: $100K<br>
+                                • Software/Licencias: $20K<br>
+                                • Setup/Integración: $30K<br>
+                                • <strong>Timeline: 3-4 meses</strong><br>
+                                • <em>Integración directa LDAP</em>
+                            </div>
+                        </div>
+                        <div class="cost-section">
+                            <div class="cost-label">Mensual Operativo</div>
+                            <div class="cost-value">$2,000</div>
+                            <div class="cost-detail">
+                                • Electricidad: $1,000<br>
+                                • Mantenimiento: $500<br>
+                                • Personal: $500<br>
+                                • <strong>Queries ILIMITADAS</strong><br>
+                                • <strong>Control total datos</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="slide-number">Slide 3 de 7</div>
+        </div>
+
+        <!-- Slide 4: Análisis Crítico - ¿Por qué AWS? -->
+        <div class="slide">
+            <div class="slide-content">
+                <h1>🤔 Pregunta Crítica: ¿Por qué migrar a AWS?</h1>
+                
+                <div class="risk-box">
+                    <h3>⚠️ Realidad de Migración AWS Bedrock</h3>
+                    <p style="font-size: 1.1em; line-height: 1.8;">
+                        <strong>PREGUNTA FUNDAMENTAL:</strong> Si ya tenemos GCP funcionando con $3M/año de valor generado,
+                        ¿qué capacidad técnica aporta AWS Bedrock que justifique:
+                    </p>
+                    <ul style="margin: 20px 0; font-size: 1.05em;">
+                        <li>• $100K-200K en costos de migración</li>
+                        <li>• 6-12 meses de timeline de implementación</li>
+                        <li>• Riesgo de interrupción del servicio actual</li>
+                        <li>• Nueva VPN, nuevas integraciones, nuevas aprobaciones</li>
+                    </ul>
+                    <p style="font-size: 1.15em; margin-top: 20px; font-weight: bold; color: #dc3545;">
+                        Respuesta: <span class="highlight" style="background: #dc3545; color: white;">NINGUNA CAPACIDAD DIFERENCIAL</span>
+                    </p>
+                </div>
+
+                <h2>Comparativa Técnica Real</h2>
+                <table class="requirements-table">
+                    <thead>
+                        <tr>
+                            <th>Capacidad</th>
+                            <th>AWS Bedrock</th>
+                            <th>GCP Vertex AI (Actual)</th>
+                            <th>Diferencial</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>LLMs State-of-Art</strong></td>
+                            <td>Claude, Llama, Titan</td>
+                            <td>Gemini, Claude, Llama</td>
+                            <td style="color: #28a745;">✓ Paridad</td>
+                        </tr>
+                        <tr>
+                            <td><strong>RAG / Vector Search</strong></td>
+                            <td>Sí (Aurora, OpenSearch)</td>
+                            <td>Sí (Vertex AI Search)</td>
+                            <td style="color: #28a745;">✓ Paridad</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Costo por Token</strong></td>
+                            <td>$3-15/M tokens</td>
+                            <td>$0.15-10/M tokens</td>
+                            <td style="color: #dc3545;">✗ GCP más económico</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Data Residency</strong></td>
+                            <td>Data en tránsito</td>
+                            <td>Data en tránsito</td>
+                            <td style="color: #ffc107;">⚠️ Igual (ambos externos)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Compliance Garantías</strong></td>
+                            <td>Sí (AWS compliance)</td>
+                            <td>Sí (Landing zone)</td>
+                            <td style="color: #28a745;">✓ Paridad</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Integración Actual</strong></td>
+                            <td>❌ No existe</td>
+                            <td>✅ Funcionando</td>
+                            <td style="color: #dc3545;">✗ GCP ventaja enorme</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Timeline to Production</strong></td>
+                            <td>6-12 meses</td>
+                            <td>YA EN PRODUCCIÓN (5 enero)</td>
+                            <td style="color: #dc3545;">✗ AWS 6-12 meses atraso</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="roi-box" style="margin-top: 40px;">
+                    <h3>💡 Conclusión Técnica</h3>
+                    <p style="font-size: 1.15em; line-height: 1.8;">
+                        <strong>NO EXISTE JUSTIFICACIÓN TÉCNICA PARA MIGRAR A AWS.</strong><br><br>
+                        
+                        Ambas plataformas (AWS y GCP) ofrecen las mismas capacidades fundamentales:
+                    </p>
+                    <ul style="margin: 15px 0; font-size: 1.05em;">
+                        <li>• Acceso a LLMs de última generación</li>
+                        <li>• Inferencia via API</li>
+                        <li>• Pricing basado en tokens</li>
+                        <li>• Compliance enterprise</li>
+                    </ul>
+                    <p style="font-size: 1.15em; margin-top: 15px;">
+                        <strong style="color: #28a745;">La diferencia es que GCP YA FUNCIONA, YA ESTÁ INTEGRADO, y YA GENERA VALOR.</strong>
+                    </p>
+                    <p style="font-size: 1.15em; margin-top: 15px; font-weight: bold;">
+                        Migrar a AWS es: <span class="highlight" style="background: #dc3545; color: white;">Gastar para estar en el mismo lugar, pero 6-12 meses más tarde</span>
+                    </p>
+                </div>
+            </div>
+            <div class="slide-number">Slide 4 de 7</div>
+        </div>
+
+        <!-- Slide 5: Path Estratégico Correcto -->
+        <div class="slide">
+            <div class="slide-content">
+                <h1>🎯 Path Estratégico Correcto</h1>
+                <p class="subtitle">La única migración que tiene sentido: GCP → On-Premise</p>
+
+                <h2>Comparativa de Paths</h2>
+                <div class="architecture-box">
+                    <h3 style="color: #dc3545;">❌ PATH PROPUESTO (VP): Ineficiente</h3>
+                    <pre style="margin: 15px 0;">
+GCP API (HOY)  →  AWS Bedrock (2026)  →  On-Premise (2027?)
+    ✓               6-12 meses              ???
+  FUNCIONA         $100K-200K            Adicional
+                   VALOR: 0
+                   
+TOTAL: 2 migraciones, ~18-24 meses, $100K-400K invertidos
+RESULTADO: Terminamos donde deberíamos estar, pero 2 años tarde
+                    </pre>
+                </div>
+
+                <div class="architecture-box" style="border-color: #28a745;">
+                    <h3 style="color: #28a745;">✅ PATH RECOMENDADO: Directo al objetivo</h3>
+                    <pre style="margin: 15px 0;">
+GCP API (HOY)  →  On-Premise (Q3 2026)
+    ✓               3-4 meses
+  FUNCIONA         $150K
+                   QUERIES ILIMITADAS
+                   CONTROL TOTAL
+                   ROI 12-15 meses
+                   
+TOTAL: 1 migración, 3-4 meses, $150K invertidos
+RESULTADO: Control, independencia, economía a largo plazo
+                    </pre>
+                </div>
+
+                <h2 style="margin-top: 40px;">Timeline Comparativo</h2>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-marker" style="background: #28a745;">Q1</div>
+                        <div class="timeline-content">
+                            <h4>Ene-Mar 2026</h4>
+                            <p><strong>GCP Actual:</strong></p>
+                            <p>Lanzamiento 5 enero</p>
+                            <p>500 usuarios activos</p>
+                            <p>Generando $3M/año valor</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-marker" style="background: #1e3c72;">Q2</div>
+                        <div class="timeline-content">
+                            <h4>Abr-Jun 2026</h4>
+                            <p><strong>Path On-Premise:</strong></p>
+                            <p>Aprobar inversión $150K</p>
+                            <p>Procurement servidor</p>
+                            <p>POC modelo local</p>
+                            <hr style="margin: 10px 0;">
+                            <p style="color: #dc3545;"><strong>Path AWS:</strong></p>
+                            <p style="color: #dc3545;">Todavía en approvals...</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-marker" style="background: #28a745;">Q3</div>
+                        <div class="timeline-content">
+                            <h4>Jul-Sep 2026</h4>
+                            <p><strong>Path On-Premise:</strong></p>
+                            <p>✅ Producción!</p>
+                            <p>Queries ilimitadas</p>
+                            <p>Ahorro $8K-18K/mes vs cloud</p>
+                            <hr style="margin: 10px 0;">
+                            <p style="color: #dc3545;"><strong>Path AWS:</strong></p>
+                            <p style="color: #dc3545;">Todavía en setup...</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-marker" style="background: #667eea;">Q4</div>
+                        <div class="timeline-content">
+                            <h4>Oct-Dic 2026</h4>
+                            <p><strong>Path On-Premise:</strong></p>
+                            <p>Optimización</p>
+                            <p>10+ casos de uso</p>
+                            <p>Agentes Level 2</p>
+                            <hr style="margin: 10px 0;">
+                            <p style="color: #ffc107;"><strong>Path AWS:</strong></p>
+                            <p style="color: #ffc107;">Tal vez listo...</p>
+                            <p style="color: #ffc107;">Mismas capacidades</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="recommendation-box" style="margin-top: 40px;">
+                    <h2>🎯 Recomendación Estratégica</h2>
+                    <p>
+                        <strong>NO MIGRAR A AWS.</strong> Es inversión sin retorno que añade complejidad sin beneficio.
+                    </p>
+                    <p style="margin-top: 20px;">
+                        <strong>MANTENER GCP</strong> como bridge hacia on-premise, usando la infraestructura ya aprobada
+                        y funcionando para continuar generando valor mientras construimos capacidad local.
+                    </p>
+                    <p style="margin-top: 20px;">
+                        <strong>ACELERAR ON-PREMISE:</strong> Invertir los $100K-200K que costaría AWS en infraestructura
+                        propia que nos da <span class="highlight">control total, costos predecibles, y queries ilimitadas.</span>
+                    </p>
+                </div>
+            </div>
+            <div class="slide-number">Slide 5 de 7</div>
+        </div>
+
+        <!-- Slide 6: Análisis Financiero Detallado -->
+        <div class="slide">
+            <div class="slide-content">
+                <h1>💰 Análisis Financiero: 3 Años</h1>
+                <p class="subtitle">Costo Total de Propiedad (TCO) - Proyección Realista</p>
+
+                <h2>Supuestos del Análisis</h2>
+                <div class="architecture-box">
+                    <p><strong>Volumen de uso:</strong> 500 usuarios, crecimiento a 1,000 usuarios año 2</p>
+                    <p><strong>Queries:</strong> 10 queries/día/usuario → 20 queries/día año 2 (capacidad)</p>
+                    <p><strong>Tokens promedio:</strong> 1,000 tokens por query (500 input, 500 output)</p>
+                </div>
+
+                <table class="requirements-table" style="margin-top: 30px;">
+                    <thead>
+                        <tr>
+                            <th>Concepto</th>
+                            <th>AWS Bedrock</th>
+                            <th>GCP Vertex AI</th>
+                            <th>On-Premise</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="background: #f0f8ff;">
+                            <td colspan="4"><strong>AÑO 1 (2026)</strong></td>
+                        </tr>
+                        <tr>
+                            <td>Setup/Capital</td>
+                            <td>$100,000</td>
+                            <td>$0</td>
+                            <td>$150,000</td>
+                        </tr>
+                        <tr>
+                            <td>Operativo (API)</td>
+                            <td>$18,000</td>
+                            <td>$7,200</td>
+                            <td>$0</td>
+                        </tr>
+                        <tr>
+                            <td>Infraestructura/Elect</td>
+                            <td>$9,600</td>
+                            <td>$0</td>
+                            <td>$12,000</td>
+                        </tr>
+                        <tr>
+                            <td>Soporte/Personal</td>
+                            <td>$6,000</td>
+                            <td>$3,000</td>
+                            <td>$12,000</td>
+                        </tr>
+                        <tr style="font-weight: bold; background: #f5f5f5;">
+                            <td>TOTAL AÑO 1</td>
+                            <td style="color: #dc3545;">$133,600</td>
+                            <td style="color: #28a745;">$10,200</td>
+                            <td style="color: #ffc107;">$174,000</td>
+                        </tr>
+
+                        <tr style="background: #f0f8ff;">
+                            <td colspan="4"><strong>AÑO 2 (2027) - 1,000 usuarios, 20 queries/día</strong></td>
+                        </tr>
+                        <tr>
+                            <td>Operativo (API)</td>
+                            <td>$72,000</td>
+                            <td>$28,800</td>
+                            <td>$0</td>
+                        </tr>
+                        <tr>
+                            <td>Infraestructura</td>
+                            <td>$12,000</td>
+                            <td>$0</td>
+                            <td>$12,000</td>
+                        </tr>
+                        <tr>
+                            <td>Soporte/Personal</td>
+                            <td>$9,000</td>
+                            <td>$4,000</td>
+                            <td>$12,000</td>
+                        </tr>
+                        <tr style="font-weight: bold; background: #f5f5f5;">
+                            <td>TOTAL AÑO 2</td>
+                            <td style="color: #dc3545;">$93,000</td>
+                            <td style="color: #28a745;">$32,800</td>
+                            <td style="color: #28a745;">$24,000</td>
+                        </tr>
+
+                        <tr style="background: #f0f8ff;">
+                            <td colspan="4"><strong>AÑO 3 (2028) - Uso intensivo</strong></td>
+                        </tr>
+                        <tr>
+                            <td>Operativo (API)</td>
+                            <td>$120,000</td>
+                            <td>$48,000</td>
+                            <td>$0</td>
+                        </tr>
+                        <tr>
+                            <td>Infraestructura</td>
+                            <td>$15,000</td>
+                            <td>$0</td>
+                            <td>$12,000</td>
+                        </tr>
+                        <tr>
+                            <td>Soporte/Personal</td>
+                            <td>$12,000</td>
+                            <td>$5,000</td>
+                            <td>$12,000</td>
+                        </tr>
+                        <tr>
+                            <td>Upgrade Hardware</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>$0</td>
+                        </tr>
+                        <tr style="font-weight: bold; background: #f5f5f5;">
+                            <td>TOTAL AÑO 3</td>
+                            <td style="color: #dc3545;">$147,000</td>
+                            <td style="color: #ffc107;">$53,000</td>
+                            <td style="color: #28a745;">$24,000</td>
+                        </tr>
+
+                        <tr style="background: #e8f5e9; font-size: 1.2em; font-weight: bold;">
+                            <td>TOTAL 3 AÑOS (TCO)</td>
+                            <td style="color: #dc3545;">$373,600</td>
+                            <td style="color: #ffc107;">$96,000</td>
+                            <td style="color: #28a745;">$222,000</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="roi-box" style="margin-top: 30px;">
+                    <h3>📊 Análisis de Breakeven</h3>
+                    <p style="font-size: 1.1em;">
+                        <strong>On-Premise vs GCP:</strong> Breakeven en mes 18-20<br>
+                        • Inversión inicial más alta ($150K vs $0)<br>
+                        • Pero costos operativos menores ($24K/año vs $32K-53K/año)<br>
+                        • Ahorro acumulado años 2-3: <span class="highlight">$62,800</span>
+                    </p>
+                    <p style="font-size: 1.1em; margin-top: 15px;">
+                        <strong>On-Premise vs AWS:</strong> Breakeven en mes 12-14<br>
+                        • AWS tiene costos setup + operativo altos<br>
+                        • Ahorro acumulado años 2-3: <span class="highlight">$216,000</span>
+                    </p>
+                    <p style="font-size: 1.2em; margin-top: 20px; font-weight: bold; color: #28a745;">
+                        A partir del año 2, On-Premise es CLARAMENTE la opción más económica.
+                    </p>
+                </div>
+
+                <div class="risk-box">
+                    <h3>⚠️ Factores NO Incluidos que Favorecen On-Premise</h3>
+                    <ul style="font-size: 1.05em;">
+                        <li>• <strong>Rate Limiting:</strong> GCP/AWS requieren limitar queries por costos. On-premise: ilimitado.</li>
+                        <li>• <strong>Latencia:</strong> Modelo local = respuesta instantánea. Cloud = 200-500ms adicional.</li>
+                        <li>• <strong>Vendor Lock-in:</strong> APIs cloud pueden cambiar pricing. Hardware es costo hundido.</li>
+                        <li>• <strong>Compliance:</strong> Reguladores prefieren data 100% local vs "garantías" cloud.</li>
+                        <li>• <strong>Capacidad Futura:</strong> Agentes complejos imposibles con rate limiting cloud.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="slide-number">Slide 6 de 7</div>
+        </div>
+
+        <!-- Slide 7: Recomendación Final -->
+        <div class="slide">
+            <div class="slide-content">
+                <h1>🎯 Recomendación Ejecutiva Final</h1>
+                
+                <div class="recommendation-box">
+                    <h2>Decisión Estratégica: Path On-Premise</h2>
+                    <p style="font-size: 1.25em; line-height: 2;">
+                        Banesco debe <strong>MANTENER GCP como bridge</strong> hacia infraestructura on-premise,
+                        y <strong>RECHAZAR migración a AWS</strong> por carecer de justificación técnica o financiera.
+                    </p>
+                </div>
+
+                <h2>Roadmap Ejecutivo 2026</h2>
+                <div class="timeline" style="margin: 40px 0;">
+                    <div class="timeline-item">
+                        <div class="timeline-marker" style="background: #28a745;">1</div>
+                        <div class="timeline-content">
+                            <h4>Q1 2026</h4>
+                            <p><strong>Lanzar & Validar</strong></p>
+                            <p>5 enero: Chatbot GCP</p>
+                            <p>Medir demanda real</p>
+                            <p>Capturar métricas ROI</p>
+                            <p>Validar valor $3M/año</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-marker" style="background: #1e3c72;">2</div>
+                        <div class="timeline-content">
+                            <h4>Q2 2026</h4>
+                            <p><strong>Aprobar & Comprar</strong></p>
+                            <p>Business case $150K</p>
+                            <p>Aprobación Directora</p>
+                            <p>Procurement servidor</p>
+                            <p>Setup infraestructura</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-marker" style="background: #667eea;">3</div>
+                        <div class="timeline-content">
+                            <h4>Q3 2026</h4>
+                            <p><strong>Deploy & Migrate</strong></p>
+                            <p>POC modelo local</p>
+                            <p>Testing producción</p>
+                            <p>Migration gradual</p>
+                            <p>Eliminar rate limits</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-marker" style="background: #28a745;">4</div>
+                        <div class="timeline-content">
+                            <h4>Q4 2026</h4>
+                            <p><strong>Scale & Optimize</strong></p>
+                            <p>10+ casos de uso</p>
+                            <p>Agentes Level 2</p>
+                            <p>Independencia cloud</p>
+                            <p>Ahorro $8-18K/mes</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h2 style="margin-top: 40px;">Argumentos Clave para Directora General</h2>
+                <div class="comparison-grid">
+                    <div class="provider-card" style="border-top-color: #dc3545;">
+                        <h3 style="color: #dc3545;">❌ Por qué NO AWS</h3>
+                        <ul style="font-size: 1.05em;">
+                            <li>No aporta capacidad técnica diferencial</li>
+                            <li>$100K-200K inversión sin ROI</li>
+                            <li>6-12 meses retraso vs hoy</li>
+                            <li>Riesgo interrupción servicio actual</li>
+                            <li>Terminamos en mismo lugar, más tarde y más caro</li>
+                        </ul>
+                    </div>
+
+                    <div class="provider-card" style="border-top-color: #28a745;">
+                        <h3 style="color: #28a745;">✅ Por qué mantener GCP</h3>
+                        <ul style="font-size: 1.05em;">
+                            <li>YA FUNCIONA (lanzamiento 5 enero)</li>
+                            <li>YA GENERA VALOR ($3M/año)</li>
+                            <li>Infraestructura aprobada y pagada</li>
+                            <li>30-40% más económico que AWS</li>
+                            <li>Bridge perfecto hacia on-premise</li>
+                        </ul>
+                    </div>
+
+                    <div class="provider-card" style="border-top-color: #667eea;">
+                        <h3 style="color: #667eea;">🎯 Por qué On-Premise</h3>
+                        <ul style="font-size: 1.05em;">
+                            <li>Control total datos (compliance)</li>
+                            <li>Queries ilimitadas (no rate limit)</li>
+                            <li>Costos predecibles ($24K/año fijo)</li>
+                            <li>ROI 12-15 meses</li>
+                            <li>Independencia de vendors cloud</li>
+                            <li>Base para agentes complejos futuros</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="roi-box" style="margin-top: 40px; font-size: 1.1em;">
+                    <h3>💡 Mensaje para Liderazgo</h3>
+                    <p style="font-size: 1.15em; line-height: 1.8;">
+                        "Hemos demostrado que podemos generar <span class="highlight">$3M/año de valor</span> con
+                        infraestructura existente. La pregunta no es 'AWS o GCP', sino
+                        <strong>'¿Cuándo invertimos en capacidad propia que nos da control total?'</strong>
+                    </p>
+                    <p style="margin-top: 20px; font-size: 1.15em;">
+                        Migrar a AWS es gastar para estar igual. <strong>Invertir en on-premise es gastar para
+                        ser independientes, escalables, y dueños de nuestro destino tecnológico.</strong>
+                    </p>
+                </div>
+
+                <div style="text-align: center; margin-top: 50px; padding: 30px; background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); border-radius: 15px;">
+                    <h2 style="color: white; border: none; margin: 0;">
+                        🏦 Banesco AI Foundation 2026
+                    </h2>
+                    <p style="color: white; font-size: 1.3em; margin-top: 15px;">
+                        Fundamentos sólidos. Decisiones basadas en valor. Independencia tecnológica.
+                    </p>
+                </div>
+            </div>
+            <div class="slide-number">Slide 7 de 7</div>
+        </div>
+    </div>
+
+    <script>
+        // Navigation con teclado
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowDown' || e.key === 'PageDown') {
+                window.scrollBy(0, window.innerHeight);
+            } else if (e.key === 'ArrowUp' || e.key === 'PageUp') {
+                window.scrollBy(0, -window.innerHeight);
+            }
+        });
+
+        // Smooth scroll para navegación
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+</html>
