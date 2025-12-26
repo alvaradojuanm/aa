@@ -1,478 +1,228 @@
-
-
-Portainer + Traefik
-
-Colocar los siguientes comandos en orden de acuerdo a los pasos del video:
-
-1.- sudo apt update
-2.- sudo apt upgrade -y
-3.- curl -fsSL https://get.docker.com -o get-docker.sh
-4.- sudo sh get-docker.sh
-5.- docker swarm init --advertise-addr=31.97.135.186
-6.- docker network create --driver=overlay agent_network
-7.- docker network create --driver=overlay traefik_public
-8.- ls
-9.- mkdir portainer
-10.- ls
-11.- cd portainer/
-12.- nano portainer.yaml
-—----------------------------------------------------------------------------------
 version: "3.8"
 
-services:
-  agent:
-    image: portainer/agent:2.33.3
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - /var/lib/docker/volumes:/var/lib/docker/volumes
-    networks:
-      - agent_network
-    deploy:
-      mode: global
-      placement:
-        constraints: [ node.platform.os == linux ]
+x-logging: &default-logging
+  driver: "json-file"
+  options:
+    max-size: "10m"
+    max-file: "3"
 
-  portainer:
-    image: portainer/portainer-ce:2.33.3
-    command: -H tcp://tasks.agent:9001 --tlsskipverify
-    #ports:
-      #- 9000:9000
+services:
+  
+  n8n_editor:
+    image: n8nio/n8n:1.123.5
+    logging: *default-logging
+    environment:
+      - DB_TYPE=postgresdb
+      - DB_POSTGRESDB_PORT=5432
+      - DB_POSTGRESDB_HOST=10.132.212.5
+      - DB_POSTGRESDB_DATABASE=p_n8n
+      - DB_POSTGRESDB_USER=n8n_db_user
+      - DB_POSTGRESDB_PASSWORD_FILE=/run/secrets/n8n_db_password
+      - N8N_ENCRYPTION_KEY_FILE=/run/secrets/n8n_encryption_key
+      - N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true
+      - N8N_HOST=ss10.aiworkflow.intra.banesco.com
+      - N8N_EDITOR_BASE_URL=https://ss10.aiworkflow.intra.banesco.com/
+      - WEBHOOK_URL=https://ss11.aiworkflow.intra.banesco.com/
+      - N8N_PROTOCOL=https
+      - GENERIC_TIMEZONE=America/Caracas
+      - N8N_PAYLOAD_SIZE_MAX=100
+      - N8N_DEFAULT_BINARY_DATA_MODE=filesystem
+      - EXECUTIONS_MODE=queue
+      - QUEUE_BULL_REDIS_HOST=redis_n8n_redis
+      - QUEUE_BULL_REDIS_PORT=6379
+      - QUEUE_BULL_REDIS_DB=2
+      - NODE_ENV=production
+      - NODE_FUNCTION_ALLOW_EXTERNAL=moment,lodash,moment-with-locales
+      - EXECUTIONS_DATA_PRUNE=true
+      - EXECUTIONS_DATA_MAX_AGE=336
+      - N8N_BLOCK_ENV_ACCESS_IN_NODE=false
+      - N8N_GIT_NODE_DISABLE_BARE_POS=true
+      - OFFLOAD_MANUAL_EXECUTIONS_TO_WORKERS=true
+      
+      
+      
+      - N8N_NODE_OPTIONS=--max-old-space-size=3200
+      
+      - NODE_EXTRA_CA_CERTS=/etc/ssl/certs/banesco.crt
+      - HTTP_PROXY=http://10.132.222.73:9090
+      - HTTPS_PROXY=http://10.132.222.73:9090
+      - NO_PROXY=localhost,127.0.0.1,postgres,redis,redis_n8n_redis,10.132.212.4,10.132.212.5,.intra.banesco.com,ss11.aiworkflow.intra.banesco.com,ss10.aiworkflow.intra.banesco.com
     volumes:
-      - portainer_data:/data
-    networks:
-      - agent_network
-      - traefik_public
+      - n8n_data:/home/node/.n8n
+      - /mnt/data/traefik/certs/banesco.crt:/etc/ssl/certs/banesco.crt:ro
+    healthcheck:
+      test: ["CMD-SHELL", "node -e \"require('http').request('http://localhost:5678/healthz', (res) => { res.statusCode === 200 ? process.exit(0) : process.exit(1); }).on('error', (err) => process.exit(1)).end()\""]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    secrets:
+      - n8n_db_password
+      - n8n_encryption_key
     deploy:
       mode: replicated
       replicas: 1
       placement:
-        constraints: [ node.role == manager ]
+        constraints:
+          - node.role == manager
+      resources:
+        limits:
+          cpus: '4'
+          memory: 4096M
       labels:
         - "traefik.enable=true"
-        - "traefik.http.routers.portainer.rule=Host(`stack.dployxperts.com`)"
-        - "traefik.http.routers.portainer.entrypoints=websecure"
-        - "traefik.http.routers.portainer.priority=1"
-        - "traefik.http.routers.portainer.tls.certresolver=le"
-        - "traefik.http.routers.portainer.service=portainer"
-        - "traefik.http.services.portainer.loadbalancer.server.port=9000"
+        - "traefik.http.routers.n8n_editor.rule=Host(`ss10.aiworkflow.intra.banesco.com`)"
+        - "traefik.http.routers.n8n_editor.service=n8n_editor"
+        - "traefik.http.routers.n8n_editor.entrypoints=websecure"
+        - "traefik.http.routers.n8n_editor.tls=true"
+        - "traefik.http.services.n8n_editor.loadbalancer.server.port=5678"
+    networks:
+      - traefik_public
+      - agent_network
+
+  
+  n8n_webhook:
+    image: n8nio/n8n:1.123.5
+    command: webhook
+    logging: *default-logging
+    environment:
+      - DB_TYPE=postgresdb
+      - DB_POSTGRESDB_PORT=5432
+      - DB_POSTGRESDB_HOST=10.132.212.5
+      - DB_POSTGRESDB_DATABASE=p_n8n
+      - DB_POSTGRESDB_USER=n8n_db_user
+      - DB_POSTGRESDB_PASSWORD_FILE=/run/secrets/n8n_db_password
+      - N8N_ENCRYPTION_KEY_FILE=/run/secrets/n8n_encryption_key
+      - N8N_HOST=ss10.aiworkflow.intra.banesco.com
+      - N8N_EDITOR_BASE_URL=https://ss10.aiworkflow.intra.banesco.com/
+      - N8N_PROTOCOL=https
+      - WEBHOOK_URL=https://ss11.aiworkflow.intra.banesco.com/
+      - GENERIC_TIMEZONE=America/Caracas
+      - N8N_PAYLOAD_SIZE_MAX=100
+      - N8N_DEFAULT_BINARY_DATA_MODE=filesystem
+      - EXECUTIONS_MODE=queue
+      - QUEUE_BULL_REDIS_HOST=redis_n8n_redis
+      - QUEUE_BULL_REDIS_PORT=6379
+      - QUEUE_BULL_REDIS_DB=2
+      - NODE_ENV=production
+      - NODE_FUNCTION_ALLOW_EXTERNAL=moment,lodash,moment-with-locales
+      - N8N_BLOCK_ENV_ACCESS_IN_NODE=false
+      
+      
+      
+      - N8N_NODE_OPTIONS=--max-old-space-size=1600
+      
+      - NODE_EXTRA_CA_CERTS=/etc/ssl/certs/banesco.crt
+      - HTTP_PROXY=http://10.132.222.73:9090
+      - HTTPS_PROXY=http://10.132.222.73:9090
+      - NO_PROXY=localhost,127.0.0.1,postgres,redis,redis_n8n_redis,10.132.212.4,10.132.212.5,.intra.banesco.com,ss11.aiworkflow.intra.banesco.com,ss10.aiworkflow.intra.banesco.com
+    volumes:
+      - n8n_data:/home/node/.n8n
+      - /mnt/data/traefik/certs/banesco.crt:/etc/ssl/certs/banesco.crt:ro
+    healthcheck:
+      test: ["CMD-SHELL", "node -e \"require('http').request('http://localhost:5678/healthz', (res) => { res.statusCode === 200 ? process.exit(0) : process.exit(1); }).on('error', (err) => process.exit(1)).end()\""]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    secrets:
+      - n8n_db_password
+      - n8n_encryption_key
+    deploy:
+      mode: replicated
+      replicas: 2
+      placement:
+        constraints:
+          - node.role == manager
+      resources:
+        limits:
+          cpus: '4'
+          memory: 2048M
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.n8n_webhook.rule=Host(`ss11.aiworkflow.intra.banesco.com`)"
+        - "traefik.http.routers.n8n_webhook.service=n8n_webhook"
+        - "traefik.http.routers.n8n_webhook.entrypoints=websecure"
+        - "traefik.http.routers.n8n_webhook.tls=true"
+        - "traefik.http.services.n8n_webhook.loadbalancer.server.port=5678"
+        
+        - "traefik.http.middlewares.n8n-ratelimit.ratelimit.average=100"
+        - "traefik.http.middlewares.n8n-ratelimit.ratelimit.burst=50"
+        - "traefik.http.routers.n8n_webhook.middlewares=n8n-ratelimit"
+    networks:
+      - traefik_public
+      - agent_network
+
+  
+  n8n_worker:
+    image: n8nio/n8n:1.123.5
+    
+    command: worker --concurrency=15
+    logging: *default-logging
+    environment:
+      - DB_TYPE=postgresdb
+      - DB_POSTGRESDB_PORT=5432
+      - DB_POSTGRESDB_HOST=10.132.212.5
+      - DB_POSTGRESDB_DATABASE=p_n8n
+      - DB_POSTGRESDB_USER=n8n_db_user
+      - DB_POSTGRESDB_PASSWORD_FILE=/run/secrets/n8n_db_password
+      - N8N_ENCRYPTION_KEY_FILE=/run/secrets/n8n_encryption_key
+      - EXECUTIONS_MODE=queue
+      - QUEUE_BULL_REDIS_HOST=redis_n8n_redis
+      - QUEUE_BULL_REDIS_PORT=6379
+      - QUEUE_BULL_REDIS_DB=2
+      - N8N_DEFAULT_BINARY_DATA_MODE=filesystem
+      - GENERIC_TIMEZONE=America/Caracas
+      - N8N_GRACEFUL_SHUTDOWN_TIMEOUT=30
+      
+      
+      - N8N_NODE_OPTIONS=--max-old-space-size=3200
+      
+      - QUEUE_HEALTH_CHECK_ACTIVE=true
+      - NODE_ENV=production
+      - NODE_FUNCTION_ALLOW_EXTERNAL=moment,lodash,moment-with-locales
+      - NODE_EXTRA_CA_CERTS=/etc/ssl/certs/banesco.crt
+      - HTTP_PROXY=http://10.132.222.73:9090
+      - HTTPS_PROXY=http://10.132.222.73:9090
+      - NO_PROXY=localhost,127.0.0.1,postgres,redis,redis_n8n_redis,10.132.212.4,10.132.212.5,.intra.banesco.com,ss11.aiworkflow.intra.banesco.com,ss10.aiworkflow.intra.banesco.com
+    volumes:
+      - n8n_data:/home/node/.n8n
+      - /mnt/data/traefik/certs/banesco.crt:/etc/ssl/certs/banesco.crt:ro
+    healthcheck:
+      test: ["CMD-SHELL", "node -e \"require('http').request('http://localhost:5678/healthz', (res) => { res.statusCode === 200 ? process.exit(0) : process.exit(1); }).on('error', (err) => process.exit(1)).end()\""]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    secrets:
+      - n8n_db_password
+      - n8n_encryption_key
+    deploy:
+      mode: replicated
+      replicas: 3
+      placement:
+        constraints:
+          - node.role == manager
+      resources:
+        limits:
+          cpus: '8'
+          
+          memory: 4096M
+    networks:
+      - agent_network
+
+volumes:
+  n8n_data:
+    external: true
 
 networks:
   traefik_public:
     external: true
-    attachable: true
   agent_network:
     external: true
 
-volumes:
-  portainer_data:
+secrets:
+  n8n_db_password:
     external: true
-—------------------------------------------------------------------
-13.- docker stack deploy -c portainer.yaml portainer
-CREATE DATABASE dx_odoo;14.- nano portainer.yaml
-15.- docker stack deploy -c portainer.yaml portainer
-
-
-
-+±++++++++
-
-root@sapl8748:/mnt/data# docker compose down
-[+] Running 6/6
- ✔ Container data-n8n-worker-1  Removed                                                                                                                                                              1.1s
- ✔ Container redisinsight       Removed                                                                                                                                                              0.6s
- ✔ Container nginx-proxy        Removed                                                                                                                                                             10.7s
- ✔ Container n8n-main           Removed                                                                                                                                                              0.6s
- ✔ Container redis              Removed                                                                                                                                                              0.5s
- ✔ Network data_default         Removed                                                                                                                                                              0.2s
-root@sapl8748:/mnt/data# docker compose up -d
-[+] Running 6/6
- ✔ Network data_default         Created                                                                                                                                                              0.1s
- ✔ Container redis              Healthy                                                                                                                                                             11.5s
- ✘ Container n8n-main           Error                                                                                                                                                               32.2s
- ✔ Container data-n8n-worker-1  Started                                                                                                                                                             11.7s
- ✔ Container redisinsight       Started                                                                                                                                                              1.1s
- ✔ Container nginx-proxy        Created                                                                                                                                                              0.2s
-dependency failed to start: container n8n-main is unhealthy
-root@sapl8748:/mnt/data# ^C
-root@sapl8748:/mnt/data# docker ps -a
-CONTAINER ID   IMAGE                           COMMAND                  CREATED              STATUS                           PORTS                      NAMES
-c623fdf28601   nginx:alpine                    "/docker-entrypoint.…"   About a minute ago   Created                                                     nginx-proxy
-d69bf00915a2   n8nio/n8n:latest                "tini -- /docker-ent…"   About a minute ago   Up 14 seconds                    5678/tcp                   data-n8n-worker-1
-879339f397e9   redislabs/redisinsight:latest   "./docker-entry.sh n…"   About a minute ago   Up About a minute                127.0.0.1:5540->5540/tcp   redisinsight
-022372cbce75   n8nio/n8n:latest                "tini -- /docker-ent…"   About a minute ago   Up 1 second (health: starting)   5678/tcp                   n8n-main
-0dd2dfac96a3   redis:7-alpine                  "docker-entrypoint.s…"   About a minute ago   Up About a minute (healthy)      6379/tcp                   redis
-21e9dee5b674   hello-world                     "/hello"                 23 hours ago         Exited (0) 23 hours ago                                     charming_hellman
-root@sapl8748:/mnt/data# ^C
-root@sapl8748:/mnt/data# docker compose down
-[+] Running 6/6
- ✔ Container data-n8n-worker-1  Removed                                                                                                                                                              0.6s
- ✔ Container nginx-proxy        Removed                                                                                                                                                              0.1s
- ✔ Container redisinsight       Removed                                                                                                                                                              0.7s
- ✔ Container n8n-main           Removed                                                                                                                                                              0.6s
- ✔ Container redis              Removed                                                                                                                                                              0.5s
- ✔ Network data_default         Removed                                                                                                                                                              0.2s
-root@sapl8748:/mnt/data# docker compose up -d
-[+] Running 6/6
- ✔ Network data_default         Created                                                                                                                                                              0.1s
- ✔ Container redis              Healthy                                                                                                                                                             11.4s
- ✔ Container data-n8n-worker-1  Started                                                                                                                                                             11.6s
- ✘ Container n8n-main           Error                                                                                                                                                               67.2s
- ✔ Container redisinsight       Started                                                                                                                                                              1.1s
- ✔ Container nginx-proxy        Created                                                                                                                                                              0.2s
-dependency failed to start: container n8n-main is unhealthy
-root@sapl8748:/mnt/data# docker compose logs -f
-redis  | 1:C 22 Oct 2025 19:34:18.317 # WARNING Memory overcommit must be enabled! Without it, a background save or replication may fail under low memory condition. Being disabled, it can also cause failures without low memory condition, see https://github.com/jemalloc/jemalloc/issues/1328. To fix this issue add 'vm.overcommit_memory = 1' to /etc/sysctl.conf and then reboot or run the command 'sysctl vm.overcommit_memory=1' for this to take effect.
-redis  | 1:C 22 Oct 2025 19:34:18.317 * oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo
-redis  | 1:C 22 Oct 2025 19:34:18.317 * Redis version=7.4.6, bits=64, commit=00000000, modified=0, pid=1, just started
-redis  | 1:C 22 Oct 2025 19:34:18.317 * Configuration loaded
-redis  | 1:M 22 Oct 2025 19:34:18.318 * monotonic clock: POSIX clock_gettime
-redis  | 1:M 22 Oct 2025 19:34:18.319 * Running mode=standalone, port=6379.
-redis  | 1:M 22 Oct 2025 19:34:18.320 * Server initialized
-n8n-main  | Last session crashed
-n8n-main  | Initializing n8n process
-redis     | 1:M 22 Oct 2025 19:34:18.320 * Reading RDB base file on AOF loading...
-redis     | 1:M 22 Oct 2025 19:34:18.320 * Loading RDB produced by version 7.4.6
-redis     | 1:M 22 Oct 2025 19:34:18.320 * RDB age 16580 seconds
-redis     | 1:M 22 Oct 2025 19:34:18.320 * RDB memory usage when created 0.90 Mb
-redis     | 1:M 22 Oct 2025 19:34:18.320 * RDB is base AOF
-redis     | 1:M 22 Oct 2025 19:34:18.320 * Done loading RDB, keys loaded: 0, keys expired: 0.
-redis     | 1:M 22 Oct 2025 19:34:18.320 * DB loaded from base file appendonly.aof.1.base.rdb: 0.000 seconds
-redis     | 1:M 22 Oct 2025 19:34:18.323 * DB loaded from incr file appendonly.aof.1.incr.aof: 0.003 seconds
-redis     | 1:M 22 Oct 2025 19:34:18.323 * DB loaded from append only file: 0.003 seconds
-redis     | 1:M 22 Oct 2025 19:34:18.323 * Opening AOF incr file appendonly.aof.1.incr.aof on server start
-redis     | 1:M 22 Oct 2025 19:34:18.323 * Ready to accept connections tcp
-redis     | 1:M 22 Oct 2025 19:35:19.029 * 1 changes in 60 seconds. Saving...
-redis     | 1:M 22 Oct 2025 19:35:19.030 * Background saving started by pid 51
-redis     | 51:C 22 Oct 2025 19:35:19.045 * DB saved on disk
-n8n-main  | There was an error initializing DB
-redis     | 51:C 22 Oct 2025 19:35:19.046 * Fork CoW for RDB: current 0 MB, peak 0 MB, average 0 MB
-redisinsight  | Running docker-entry.sh
-redis         | 1:M 22 Oct 2025 19:35:19.131 * Background saving terminated with success
-n8n-main      | no se pudo abrir el segmento de memoria compartida «/PostgreSQL.2712015814»: No such file or directory
-n8n-main      | Last session crashed
-n8n-main      | Initializing n8n process
-n8n-main      | There was an error initializing DB
-n8n-main      | no se pudo abrir el segmento de memoria compartida «/PostgreSQL.2712015814»: No such file or directory
-n8n-main      | Last session crashed
-n8n-main      | Initializing n8n process
-n8n-main      | There was an error initializing DB
-n8n-main      | no se pudo abrir el segmento de memoria compartida «/PostgreSQL.2712015814»: No such file or directory
-n8n-main      | Last session crashed
-n8n-main      | Initializing n8n process
-n8n-main      | There was an error initializing DB
-n8n-main      | no se pudo abrir el segmento de memoria compartida «/PostgreSQL.2712015814»: No such file or directory
-n8n-main      | Last session crashed
-n8n-worker-1  | Last session crashed
-n8n-worker-1  | There was an error initializing DB
-n8n-worker-1  | no se pudo abrir el segmento de memoria compartida «/PostgreSQL.2712015814»: No such file or directory
-n8n-worker-1  | Last session crashed
-n8n-worker-1  | There was an error initializing DB
-n8n-worker-1  | no se pudo abrir el segmento de memoria compartida «/PostgreSQL.2712015814»: No such file or directory
-n8n-worker-1  | Last session crashed
-n8n-worker-1  | There was an error initializing DB
-n8n-worker-1  | no se pudo abrir el segmento de memoria compartida «/PostgreSQL.2712015814»: No such file or directory
-n8n-worker-1  | Last session crashed
-n8n-worker-1  | There was an error initializing DB
-n8n-worker-1  | no se pudo abrir el segmento de memoria compartida «/PostgreSQL.2712015814»: No such file or directory
-n8n-worker-1  | Last session crashed
-n8n-main      | Initializing n8n process
-n8n-worker-1  | There was an error initializing DB
-n8n-worker-1  | no se pudo abrir el segmento de memoria compartida «/PostgreSQL.2712015814»: No such file or directory
-n8n-worker-1  | Last session crashed
-n8n-worker-1  | There was an error initializing DB
-n8n-worker-1  | no se pudo abrir el segmento de memoria compartida «/PostgreSQL.2712015814»: No such file or directory
-n8n-worker-1  | Last session crashed
-n8n-main      | There was an error initializing DB
-n8n-main      | no se pudo abrir el segmento de memoria compartida «/PostgreSQL.2712015814»: No such file or directory
-n8n-main      | Last session crashed
-n8n-main      | Initializing n8n process
-n8n-main      | There was an error initializing DB
-n8n-main      | no se pudo abrir el segmento de memoria compartida «/PostgreSQL.2712015814»: No such file or directory
-n8n-main      | Last session crashed
-n8n-worker-1  | There was an error initializing DB
-n8n-worker-1  | no se pudo abrir el segmento de memoria compartida «/PostgreSQL.2712015814»: No such file or directory
-n8n-worker-1 exited with code 1 (restarting)
-n8n-main      | Initializing n8n process
-n8n-main      | There was an error initializing DB
-n8n-main      | no se pudo abrir el segmento de memoria compartida «/PostgreSQL.2712015814»: No such file or directory
-n8n-main exited with code 1 (restarting)
-n8n-worker-1  | Last session crashed
-n8n-main      | Last session crashed
-n8n-worker-1  | There was an error initializing DB
-n8n-worker-1  | no se pudo abrir el segmento de memoria compartida «/PostgreSQL.2712015814»: No such file or directory
-n8n-worker-1 exited with code 1 (restarting)
-n8n-main      | Initializing n8n process
-n8n-main      | There was an error initializing DB
-n8n-main      | no se pudo abrir el segmento de memoria compartida «/PostgreSQL.2712015814»: No such file or directory
-n8n-worker-1  | Last session crashed
-n8n-main exited with code 1 (restarting)
-n8n-main      | Last session crashed
-n8n-worker-1  | There was an error initializing DB
-n8n-worker-1  | no se pudo abrir el segmento de memoria compartida «/PostgreSQL.2712015814»: No such file or directory
-n8n-worker-1 exited with code 1 (restarting)
-n8n-main      | Initializing n8n process
-n8n-main      | There was an error initializing DB
-n8n-main      | no se pudo abrir el segmento de memoria compartida «/PostgreSQL.2712015814»: No such file or directory
-n8n-worker-1  | Last session crashed
-n8n-main exited with code 1 (restarting)
-n8n-main      | Last session crashed
-n8n-worker-1  | There was an error initializing DB
-n8n-worker-1  | no se pudo abrir el segmento de memoria compartida «/PostgreSQL.2712015814»: No such file or directory
-n8n-worker-1 exited with code 1 (restarting)
-n8n-main      | Initializing n8n process
-n8n-main      | There was an error initializing DB
-n8n-main      | no se pudo abrir el segmento de memoria compartida «/PostgreSQL.2712015814»: No such file or directory
-n8n-worker-1  | Last session crashed
-n8n-main exited with code 1 (restarting)
-n8n-main      | Last session crashed
-n8n-worker-1  | There was an error initializing DB
-n8n-worker-1  | no se pudo abrir el segmento de memoria compartida «/PostgreSQL.2712015814»: No such file or directory
-n8n-worker-1 exited with code 1 (restarting)
-n8n-main      | Initializing n8n process
-n8n-worker-1  | Last session crashed
-n8n-main      | There was an error initializing DB
-n8n-main      | no se pudo abrir el segmento de memoria compartida «/PostgreSQL.2712015814»: No such file or directory
-n8n-main exited with code 1 (restarting)
-n8n-main      | Last session crashed
-n8n-worker-1  | There was an error initializing DB
-n8n-worker-1  | no se pudo abrir el segmento de memoria compartida «/PostgreSQL.2712015814»: No such file or directory
-n8n-worker-1 exited with code 1 (restarting)
-n8n-worker-1  | Last session crashed
-n8n-main      | Initializing n8n process
-n8n-main      | There was an error initializing DB
-n8n-main      | no se pudo abrir el segmento de memoria compartida «/PostgreSQL.2712015814»: No such file or directory
-n8n-main exited with code 1 (restarting)
-^Z
-[2]+  Stopped                 docker compose logs -f
-root@sapl8748:/mnt/data# ^C
-root@sapl8748:/mnt/data# psql -h 10.135.197.101 -U postgres -d c_n8n
-psql: error: connection to server at "10.135.197.101", port 5432 failed: FATAL:  no se pudo abrir el segmento de memoria compartida «/PostgreSQL.2712015814»: No such file or directory
-connection to server at "10.135.197.101", port 5432 failed: FATAL:  no se pudo abrir el segmento de memoria compartida «/PostgreSQL.2712015814»: No such file or directory
-root@sapl8748:/mnt/data# psql -h 10.135.197.101 -U postgres -d c_n8n -W
-Password:
-root@sapl8748:/mnt/data# psql -h 10.135.197.101 -U postgres -d c_n8n
-psql: error: connection to server at "10.135.197.101", port 5432 failed: FATAL:  no se pudo abrir el segmento de memoria compartida «/PostgreSQL.2712015814»: No such file or directory
-connection to server at "10.135.197.101", port 5432 failed: FATAL:  no se pudo abrir el segmento de memoria compartida «/PostgreSQL.2712015814»: No such file or directory
-root@sapl8748:/mnt/data# cleaar
-
-
------------------------------------------
-
-root@sapl8748:/mnt/data# docker compose down
-[+] Running 6/6
- ✔ Container data-n8n-worker-1  Removed                                                                                                                                                              1.1s
- ✔ Container redisinsight       Removed                                                                                                                                                              0.6s
- ✔ Container nginx-proxy        Removed                                                                                                                                                             10.7s
- ✔ Container n8n-main           Removed                                                                                                                                                              0.6s
- ✔ Container redis              Removed                                                                                                                                                              0.5s
- ✔ Network data_default         Removed                                                                                                                                                              0.2s
-root@sapl8748:/mnt/data# docker compose up -d
-[+] Running 6/6
- ✔ Network data_default         Created                                                                                                                                                              0.1s
- ✔ Container redis              Healthy                                                                                                                                                             11.5s
- ✘ Container n8n-main           Error                                                                                                                                                               32.2s
- ✔ Container data-n8n-worker-1  Started                                                                                                                                                             11.7s
- ✔ Container redisinsight       Started                                                                                                                                                              1.1s
- ✔ Container nginx-proxy        Created                                                                                                                                                              0.2s
-dependency failed to start: container n8n-main is unhealthy
-root@sapl8748:/mnt/data# ^C
-root@sapl8748:/mnt/data# docker ps -a
-CONTAINER ID   IMAGE                           COMMAND                  CREATED              STATUS                           PORTS                      NAMES
-c623fdf28601   nginx:alpine                    "/docker-entrypoint.…"   About a minute ago   Created                                                     nginx-proxy
-d69bf00915a2   n8nio/n8n:latest                "tini -- /docker-ent…"   About a minute ago   Up 14 seconds                    5678/tcp                   data-n8n-worker-1
-879339f397e9   redislabs/redisinsight:latest   "./docker-entry.sh n…"   About a minute ago   Up About a minute                127.0.0.1:5540->5540/tcp   redisinsight
-022372cbce75   n8nio/n8n:latest                "tini -- /docker-ent…"   About a minute ago   Up 1 second (health: starting)   5678/tcp                   n8n-main
-0dd2dfac96a3   redis:7-alpine                  "docker-entrypoint.s…"   About a minute ago   Up About a minute (healthy)      6379/tcp                   redis
-21e9dee5b674   hello-world                     "/hello"                 23 hours ago         Exited (0) 23 hours ago                                     charming_hellman
-root@sapl8748:/mnt/data# ^C
-root@sapl8748:/mnt/data# docker compose down
-[+] Running 6/6
- ✔ Container data-n8n-worker-1  Removed                                                                                                                                                              0.6s
- ✔ Container nginx-proxy        Removed                                                                                                                                                              0.1s
- ✔ Container redisinsight       Removed                                                                                                                                                              0.7s
- ✔ Container n8n-main           Removed                                                                                                                                                              0.6s
- ✔ Container redis              Removed                                                                                                                                                              0.5s
- ✔ Network data_default         Removed                                                                                                                                                              0.2s
-root@sapl8748:/mnt/data# docker compose up -d
-[+] Running 6/6
- ✔ Network data_default         Created                                                                                                                                                              0.1s
- ✔ Container redis              Healthy                                                                                                                                                             11.4s
- ✔ Container data-n8n-worker-1  Started                                                                                                                                                             11.6s
- ✘ Container n8n-main           Error                                                                                                                                                               67.2s
- ✔ Container redisinsight       Started                                                                                                                                                              1.1s
- ✔ Container nginx-proxy        Created                                                                                                                                                              0.2s
-dependency failed to start: container n8n-main is unhealthy
-root@sapl8748:/mnt/data#
-
-
-
-^C
-root@sapl8748:/mnt/data# docker compose down
-[+] Running 6/6
- ✔ Container data-n8n-worker-1  Removed                                                                                                                                                              1.1s
- ✔ Container redisinsight       Removed                                                                                                                                                              0.6s
- ✔ Container nginx-proxy        Removed                                                                                                                                                             10.7s
- ✔ Container n8n-main           Removed                                                                                                                                                              0.6s
- ✔ Container redis              Removed                                                                                                                                                              0.5s
- ✔ Network data_default         Removed                                                                                                                                                              0.2s
-root@sapl8748:/mnt/data# docker compose up -d
-[+] Running 6/6
- ✔ Network data_default         Created                                                                                                                                                              0.1s
- ✔ Container redis              Healthy                                                                                                                                                             11.5s
- ✘ Container n8n-main           Error                                                                                                                                                               32.2s
- ✔ Container data-n8n-worker-1  Started                                                                                                                                                             11.7s
- ✔ Container redisinsight       Started                                                                                                                                                              1.1s
- ✔ Container nginx-proxy        Created                                                                                                                                                              0.2s
-dependency failed to start: container n8n-main is unhealthy
-root@sapl8748:/mnt/data# ^C
-root@sapl8748:/mnt/data# docker ps -a
-CONTAINER ID   IMAGE                           COMMAND                  CREATED              STATUS                           PORTS                      NAMES
-c623fdf28601   nginx:alpine                    "/docker-entrypoint.…"   About a minute ago   Created                                                     nginx-proxy
-d69bf00915a2   n8nio/n8n:latest                "tini -- /docker-ent…"   About a minute ago   Up 14 seconds                    5678/tcp                   data-n8n-worker-1
-879339f397e9   redislabs/redisinsight:latest   "./docker-entry.sh n…"   About a minute ago   Up About a minute                127.0.0.1:5540->5540/tcp   redisinsight
-022372cbce75   n8nio/n8n:latest                "tini -- /docker-ent…"   About a minute ago   Up 1 second (health: starting)   5678/tcp                   n8n-main
-0dd2dfac96a3   redis:7-alpine                  "docker-entrypoint.s…"   About a minute ago   Up About a minute (healthy)      6379/tcp                   redis
-21e9dee5b674   hello-world                     "/hello"                 23 hours ago         Exited (0) 23 hours ago                                     charming_hellman
-root@sapl8748:/mnt/data# ^C
-root@sapl8748:/mnt/data# docker compose down
-[+] Running 6/6
- ✔ Container data-n8n-worker-1  Removed                                                                                                                                                              0.6s
- ✔ Container nginx-proxy        Removed                                                                                                                                                              0.1s
- ✔ Container redisinsight       Removed                                                                                                                                                              0.7s
- ✔ Container n8n-main           Removed                                                                                                                                                              0.6s
- ✔ Container redis              Removed                                                                                                                                                              0.5s
- ✔ Network data_default         Removed                                                                                                                                                              0.2s
-root@sapl8748:/mnt/data# docker compose up -d
-[+] Running 6/6
- ✔ Network data_default         Created                                                                                                                                                              0.1s
- ✔ Container redis              Healthy                                                                                                                                                             11.4s
- ✔ Container data-n8n-worker-1  Started                                                                                                                                                             11.6s
- ✘ Container n8n-main           Error                                                                                                                                                               67.2s
- ✔ Container redisinsight       Started                                                                                                                                                              1.1s
- ✔ Container nginx-proxy        Created                                                                                                                                                              0.2s
-dependency failed to start: container n8n-main is unhealthy
-root@sapl8748:/mnt/data# docker compose logs -f
-redis  | 1:C 22 Oct 2025 19:34:18.317 # WARNING Memory overcommit must be enabled! Without it, a background save or replication may fail under low memory condition. Being disabled, it can also cause failures without low memory condition, see https://github.com/jemalloc/jemalloc/issues/1328. To fix this issue add 'vm.overcommit_memory = 1' to /etc/sysctl.conf and then reboot or run the command 'sysctl vm.overcommit_memory=1' for this to take effect.
-redis  | 1:C 22 Oct 2025 19:34:18.317 * oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo
-redis  | 1:C 22 Oct 2025 19:34:18.317 * Redis version=7.4.6, bits=64, commit=00000000, modified=0, pid=1, just started
-redis  | 1:C 22 Oct 2025 19:34:18.317 * Configuration loaded
-redis  | 1:M 22 Oct 2025 19:34:18.318 * monotonic clock: POSIX clock_gettime
-redis  | 1:M 22 Oct 2025 19:34:18.319 * Running mode=standalone, port=6379.
-redis  | 1:M 22 Oct 2025 19:34:18.320 * Server initialized
-n8n-main  | Last session crashed
-n8n-main  | Initializing n8n process
-redis     | 1:M 22 Oct 2025 19:34:18.320 * Reading RDB base file on AOF loading...
-redis     | 1:M 22 Oct 2025 19:34:18.320 * Loading RDB produced by version 7.4.6
-redis     | 1:M 22 Oct 2025 19:34:18.320 * RDB age 16580 seconds
-redis     | 1:M 22 Oct 2025 19:34:18.320 * RDB memory usage when created 0.90 Mb
-redis     | 1:M 22 Oct 2025 19:34:18.320 * RDB is base AOF
-redis     | 1:M 22 Oct 2025 19:34:18.320 * Done loading RDB, keys loaded: 0, keys expired: 0.
-redis     | 1:M 22 Oct 2025 19:34:18.320 * DB loaded from base file appendonly.aof.1.base.rdb: 0.000 seconds
-redis     | 1:M 22 Oct 2025 19:34:18.323 * DB loaded from incr file appendonly.aof.1.incr.aof: 0.003 seconds
-redis     | 1:M 22 Oct 2025 19:34:18.323 * DB loaded from append only file: 0.003 seconds
-redis     | 1:M 22 Oct 2025 19:34:18.323 * Opening AOF incr file appendonly.aof.1.incr.aof on server start
-redis     | 1:M 22 Oct 2025 19:34:18.323 * Ready to accept connections tcp
-redis     | 1:M 22 Oct 2025 19:35:19.029 * 1 changes in 60 seconds. Saving...
-redis     | 1:M 22 Oct 2025 19:35:19.030 * Background saving started by pid 51
-redis     | 51:C 22 Oct 2025 19:35:19.045 * DB saved on disk
-n8n-main  | There was an error initializing DB
-redis     | 51:C 22 Oct 2025 19:35:19.046 * Fork CoW for RDB: current 0 MB, peak 0 MB, average 0 MB
-redisinsight  | Running docker-entry.sh
-redis         | 1:M 22 Oct 2025 19:35:19.131 * Background saving terminated with success
-n8n-main      | no se pudo abrir el segmento de memoria compartida «/PostgreSQL.2712015814»: No such file or directory
-n8n-main      | Last session crashed
-n8n-main      | Initializing n8n process
-n8n-main      | There was an error initializing DB
-n8n-main      | no se pudo abrir el segmento de memoria compartida «/PostgreSQL.2712015814»: No such file or directory
-n8n-main      | Last session crashed
-n8n-main      | Initializing n8n process
-n8n-main      | There was an error initializing DB
-n8n-main      | no se pudo abrir el segmento de memoria compartida «/PostgreSQL.2712015814»: No such file or directory
-n8n-main      | Last session crashed
-n8n-main      | Initializing n8n process
-n8n-main      | There was an error initializing DB
-n8n-main      | no se pudo abrir el segmento de memoria compartida «/PostgreSQL.2712015814»: No such file or directory
-n8n-main      | Last session crashed
-n8n-worker-1  | Last session crashed
-n8n-worker-1  | There was an error initializing DB
-n8n-worker-1  | no se pudo abrir el segmento de memoria compartida «/PostgreSQL.2712015814»: No such file or directory
-n8n-worker-1  | Last session crashed
-n8n-worker-1  | There was an error initializing DB
-n8n-worker-1  | no se pudo abrir el segmento de memoria compartida «/PostgreSQL.2712015814»: No such file or directory
-n8n-worker-1  | Last session crashed
-n8n-worker-1  | There was an error initializing DB
-n8n-worker-1  | no se pudo abrir el segmento de memoria compartida «/PostgreSQL.2712015814»: No such file or directory
-n8n-worker-1  | Last session crashed
-n8n-worker-1  | There was an error initializing DB
-n8n-worker-1  | no se pudo abrir el segmento de memoria compartida «/PostgreSQL.2712015814»: No such file or directory
-n8n-worker-1  | Last session crashed
-n8n-main      | Initializing n8n process
-n8n-worker-1  | There was an error initializing DB
-n8n-worker-1  | no se pudo abrir el segmento de memoria compartida «/PostgreSQL.2712015814»: No such file or directory
-n8n-worker-1  | Last session crashed
-n8n-worker-1  | There was an error initializing DB
-n8n-worker-1  | no se pudo abrir el segmento de memoria compartida «/PostgreSQL.2712015814»: No such file or directory
-n8n-worker-1  | Last session crashed
-n8n-main      | There was an error initializing DB
-n8n-main      | no se pudo abrir el segmento de memoria compartida «/PostgreSQL.2712015814»: No such file or directory
-n8n-main      | Last session crashed
-n8n-main      | Initializing n8n process
-n8n-main      | There was an error initializing DB
-n8n-main      | no se pudo abrir el segmento de memoria compartida «/PostgreSQL.2712015814»: No such file or directory
-n8n-main      | Last session crashed
-n8n-worker-1  | There was an error initializing DB
-n8n-worker-1  | no se pudo abrir el segmento de memoria compartida «/PostgreSQL.2712015814»: No such file or directory
-n8n-worker-1 exited with code 1 (restarting)
-n8n-main      | Initializing n8n process
-n8n-main      | There was an error initializing DB
-n8n-main      | no se pudo abrir el segmento de memoria compartida «/PostgreSQL.2712015814»: No such file or directory
-n8n-main exited with code 1 (restarting)
-n8n-worker-1  | Last session crashed
-n8n-main      | Last session crashed
-n8n-worker-1  | There was an error initializing DB
-n8n-worker-1  | no se pudo abrir el segmento de memoria compartida «/PostgreSQL.2712015814»: No such file or directory
-n8n-worker-1 exited with code 1 (restarting)
-n8n-main      | Initializing n8n process
-n8n-main      | There was an error initializing DB
-n8n-main      | no se pudo abrir el segmento de memoria compartida «/PostgreSQL.2712015814»: No such file or directory
-n8n-worker-1  | Last session crashed
-n8n-main exited with code 1 (restarting)
-n8n-main      | Last session crashed
-n8n-worker-1  | There was an error initializing DB
-n8n-worker-1  | no se pudo abrir el segmento de memoria compartida «/PostgreSQL.2712015814»: No such file or directory
-n8n-worker-1 exited with code 1 (restarting)
-n8n-main      | Initializing n8n process
-n8n-main      | There was an error initializing DB
-n8n-main      | no se pudo abrir el segmento de memoria compartida «/PostgreSQL.2712015814»: No such file or directory
-n8n-worker-1  | Last session crashed
-n8n-main exited with code 1 (restarting)
-n8n-main      | Last session crashed
-n8n-worker-1  | There was an error initializing DB
-n8n-worker-1  | no se pudo abrir el segmento de memoria compartida «/PostgreSQL.2712015814»: No such file or directory
-n8n-worker-1 exited with code 1 (restarting)
-n8n-main      | Initializing n8n process
-n8n-main      | There was an error initializing DB
-n8n-main      | no se pudo abrir el segmento de memoria compartida «/PostgreSQL.2712015814»: No such file or directory
-n8n-worker-1  | Last session crashed
-n8n-main exited with code 1 (restarting)
-n8n-main      | Last session crashed
-n8n-worker-1  | There was an error initializing DB
-n8n-worker-1  | no se pudo abrir el segmento de memoria compartida «/PostgreSQL.2712015814»: No such file or directory
-n8n-worker-1 exited with code 1 (restarting)
-n8n-main      | Initializing n8n process
-n8n-worker-1  | Last session crashed
-n8n-main      | There was an error initializing DB
-n8n-main      | no se pudo abrir el segmento de memoria compartida «/PostgreSQL.2712015814»: No such file or directory
-n8n-main exited with code 1 (restarting)
-n8n-main      | Last session crashed
-n8n-worker-1  | There was an error initializing DB
-n8n-worker-1  | no se pudo abrir el segmento de memoria compartida «/PostgreSQL.2712015814»: No such file or directory
-n8n-worker-1 exited with code 1 (restarting)
-n8n-worker-1  | Last session crashed
-n8n-main      | Initializing n8n process
-n8n-main      | There was an error initializing DB
-n8n-main      | no se pudo abrir el segmento de memoria compartida «/PostgreSQL.2712015814»: No such file or directory
-n8n-main exited with code 1 (restarting)
-^Z
-[2]+  Stopped                 docker compose logs -f
-root@sapl8748:/mnt/data#
-
+  n8n_encryption_key:
+    external: true
