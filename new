@@ -1,0 +1,295 @@
+version: "3.8"
+
+x-logging: &default-logging
+  driver: "json-file"
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+services:
+  
+  n8n_editor:
+    image: n8nio/n8n:2.1.4  # ⬆️ ACTUALIZADO de 1.123.5 a 2.1.4
+    logging: *default-logging
+    environment:
+      # --- Database Configuration ---
+      - DB_TYPE=postgresdb
+      - DB_POSTGRESDB_PORT=5432
+      - DB_POSTGRESDB_HOST=10.132.212.5
+      - DB_POSTGRESDB_DATABASE=p_n8n
+      - DB_POSTGRESDB_USER=n8n_db_user
+      - DB_POSTGRESDB_PASSWORD_FILE=/run/secrets/n8n_db_password
+      - N8N_ENCRYPTION_KEY_FILE=/run/secrets/n8n_encryption_key
+      
+      # --- URLs Configuration ---
+      - N8N_HOST=ss10.aiworkflow.intra.banesco.com
+      - N8N_EDITOR_BASE_URL=https://ss10.aiworkflow.intra.banesco.com/
+      - WEBHOOK_URL=https://ss11.aiworkflow.intra.banesco.com/
+      - N8N_PROTOCOL=https
+      
+      # --- Regional Configuration ---
+      - GENERIC_TIMEZONE=America/Caracas
+      
+      # --- Performance Configuration ---
+      - N8N_PAYLOAD_SIZE_MAX=100
+      - N8N_NODE_OPTIONS=--max-old-space-size=3200
+      
+      # --- Binary Data Mode ---
+      - N8N_DEFAULT_BINARY_DATA_MODE=database  # ✅ CAMBIADO de filesystem a database (recomendado para queue mode)
+      
+      # --- Queue Mode Configuration ---
+      - EXECUTIONS_MODE=queue
+      - QUEUE_BULL_REDIS_HOST=redis_n8n_redis
+      - QUEUE_BULL_REDIS_PORT=6379
+      - QUEUE_BULL_REDIS_DB=2
+      - OFFLOAD_MANUAL_EXECUTIONS_TO_WORKERS=true
+      
+      # --- Environment Configuration ---
+      - NODE_ENV=production
+      - NODE_FUNCTION_ALLOW_EXTERNAL=moment,lodash,moment-with-locales
+      
+      # --- Executions Cleanup ---
+      - EXECUTIONS_DATA_PRUNE=true
+      - EXECUTIONS_DATA_MAX_AGE=336
+      
+      # ========================================
+      # ✅ N8N v2.0+ NUEVAS CONFIGURACIONES
+      # ========================================
+      
+      # --- Security Settings (v2.0 defaults) ---
+      - N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true
+      - N8N_OAUTH_CALLBACK_URLS_REQUIRE_AUTH=true  # ✅ NUEVO - Seguridad OAuth
+      - N8N_BLOCK_ENV_ACCESS_IN_NODE=false  # ⚠️ Mantenido en false - Revisar workflows antes de cambiar a true
+      
+      # --- Task Runners (v2.0 requirement) ---
+      - N8N_RUNNERS_ENABLED=true  # ✅ NUEVO - Task runners habilitados
+      - N8N_RUNNERS_MODE=internal  # ✅ NUEVO - Modo internal (sin contenedores adicionales)
+      
+      # --- Git Configuration ---
+      - N8N_GIT_NODE_DISABLE_BARE_REPOS=true  # ✅ CORREGIDO el typo (era BARE_POS)
+      
+      # --- Corporate Proxy Configuration ---
+      - NODE_EXTRA_CA_CERTS=/etc/ssl/certs/banesco.crt
+      - HTTP_PROXY=http://10.132.222.73:9090
+      - HTTPS_PROXY=http://10.132.222.73:9090
+      - NO_PROXY=localhost,127.0.0.1,postgres,redis,redis_n8n_redis,10.132.212.4,10.132.212.5,.intra.banesco.com,ss11.aiworkflow.intra.banesco.com,ss10.aiworkflow.intra.banesco.com
+      
+    volumes:
+      - n8n_data:/home/node/.n8n
+      - /mnt/data/traefik/certs/banesco.crt:/etc/ssl/certs/banesco.crt:ro
+    healthcheck:
+      test: ["CMD-SHELL", "node -e \"require('http').request('http://localhost:5678/healthz', (res) => { res.statusCode === 200 ? process.exit(0) : process.exit(1); }).on('error', (err) => process.exit(1)).end()\""]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    secrets:
+      - n8n_db_password
+      - n8n_encryption_key
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      resources:
+        limits:
+          cpus: '4'
+          memory: 4096M
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.n8n_editor.rule=Host(`ss10.aiworkflow.intra.banesco.com`)"
+        - "traefik.http.routers.n8n_editor.service=n8n_editor"
+        - "traefik.http.routers.n8n_editor.entrypoints=websecure"
+        - "traefik.http.routers.n8n_editor.tls=true"
+        - "traefik.http.services.n8n_editor.loadbalancer.server.port=5678"
+    networks:
+      - traefik_public
+      - agent_network
+
+  
+  n8n_webhook:
+    image: n8nio/n8n:2.1.4  # ⬆️ ACTUALIZADO de 1.123.5 a 2.1.4
+    command: webhook
+    logging: *default-logging
+    environment:
+      # --- Database Configuration ---
+      - DB_TYPE=postgresdb
+      - DB_POSTGRESDB_PORT=5432
+      - DB_POSTGRESDB_HOST=10.132.212.5
+      - DB_POSTGRESDB_DATABASE=p_n8n
+      - DB_POSTGRESDB_USER=n8n_db_user
+      - DB_POSTGRESDB_PASSWORD_FILE=/run/secrets/n8n_db_password
+      - N8N_ENCRYPTION_KEY_FILE=/run/secrets/n8n_encryption_key
+      
+      # --- URLs Configuration ---
+      - N8N_HOST=ss10.aiworkflow.intra.banesco.com
+      - N8N_EDITOR_BASE_URL=https://ss10.aiworkflow.intra.banesco.com/
+      - N8N_PROTOCOL=https
+      - WEBHOOK_URL=https://ss11.aiworkflow.intra.banesco.com/
+      
+      # --- Regional Configuration ---
+      - GENERIC_TIMEZONE=America/Caracas
+      
+      # --- Performance Configuration ---
+      - N8N_PAYLOAD_SIZE_MAX=100
+      - N8N_NODE_OPTIONS=--max-old-space-size=1600
+      
+      # --- Binary Data Mode ---
+      - N8N_DEFAULT_BINARY_DATA_MODE=database  # ✅ CAMBIADO de filesystem a database
+      
+      # --- Queue Mode Configuration ---
+      - EXECUTIONS_MODE=queue
+      - QUEUE_BULL_REDIS_HOST=redis_n8n_redis
+      - QUEUE_BULL_REDIS_PORT=6379
+      - QUEUE_BULL_REDIS_DB=2
+      
+      # --- Environment Configuration ---
+      - NODE_ENV=production
+      - NODE_FUNCTION_ALLOW_EXTERNAL=moment,lodash,moment-with-locales
+      
+      # ========================================
+      # ✅ N8N v2.0+ NUEVAS CONFIGURACIONES
+      # ========================================
+      
+      # --- Security Settings ---
+      - N8N_OAUTH_CALLBACK_URLS_REQUIRE_AUTH=true  # ✅ NUEVO
+      - N8N_BLOCK_ENV_ACCESS_IN_NODE=false
+      
+      # --- Task Runners ---
+      - N8N_RUNNERS_ENABLED=true  # ✅ NUEVO
+      - N8N_RUNNERS_MODE=internal  # ✅ NUEVO
+      
+      # --- Corporate Proxy Configuration ---
+      - NODE_EXTRA_CA_CERTS=/etc/ssl/certs/banesco.crt
+      - HTTP_PROXY=http://10.132.222.73:9090
+      - HTTPS_PROXY=http://10.132.222.73:9090
+      - NO_PROXY=localhost,127.0.0.1,postgres,redis,redis_n8n_redis,10.132.212.4,10.132.212.5,.intra.banesco.com,ss11.aiworkflow.intra.banesco.com,ss10.aiworkflow.intra.banesco.com
+      
+    volumes:
+      - n8n_data:/home/node/.n8n
+      - /mnt/data/traefik/certs/banesco.crt:/etc/ssl/certs/banesco.crt:ro
+    healthcheck:
+      test: ["CMD-SHELL", "node -e \"require('http').request('http://localhost:5678/healthz', (res) => { res.statusCode === 200 ? process.exit(0) : process.exit(1); }).on('error', (err) => process.exit(1)).end()\""]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    secrets:
+      - n8n_db_password
+      - n8n_encryption_key
+    deploy:
+      mode: replicated
+      replicas: 2
+      placement:
+        constraints:
+          - node.role == manager
+      resources:
+        limits:
+          cpus: '4'
+          memory: 2048M
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.n8n_webhook.rule=Host(`ss11.aiworkflow.intra.banesco.com`)"
+        - "traefik.http.routers.n8n_webhook.service=n8n_webhook"
+        - "traefik.http.routers.n8n_webhook.entrypoints=websecure"
+        - "traefik.http.routers.n8n_webhook.tls=true"
+        - "traefik.http.services.n8n_webhook.loadbalancer.server.port=5678"
+        # Rate limiting
+        - "traefik.http.middlewares.n8n-ratelimit.ratelimit.average=100"
+        - "traefik.http.middlewares.n8n-ratelimit.ratelimit.burst=50"
+        - "traefik.http.routers.n8n_webhook.middlewares=n8n-ratelimit"
+    networks:
+      - traefik_public
+      - agent_network
+
+  
+  n8n_worker:
+    image: n8nio/n8n:2.1.4  # ⬆️ ACTUALIZADO de 1.123.5 a 2.1.4
+    command: worker --concurrency=15
+    logging: *default-logging
+    environment:
+      # --- Database Configuration ---
+      - DB_TYPE=postgresdb
+      - DB_POSTGRESDB_PORT=5432
+      - DB_POSTGRESDB_HOST=10.132.212.5
+      - DB_POSTGRESDB_DATABASE=p_n8n
+      - DB_POSTGRESDB_USER=n8n_db_user
+      - DB_POSTGRESDB_PASSWORD_FILE=/run/secrets/n8n_db_password
+      - N8N_ENCRYPTION_KEY_FILE=/run/secrets/n8n_encryption_key
+      
+      # --- Queue Mode Configuration ---
+      - EXECUTIONS_MODE=queue
+      - QUEUE_BULL_REDIS_HOST=redis_n8n_redis
+      - QUEUE_BULL_REDIS_PORT=6379
+      - QUEUE_BULL_REDIS_DB=2
+      - QUEUE_HEALTH_CHECK_ACTIVE=true
+      
+      # --- Binary Data Mode ---
+      - N8N_DEFAULT_BINARY_DATA_MODE=database  # ✅ CAMBIADO de filesystem a database
+      
+      # --- Regional Configuration ---
+      - GENERIC_TIMEZONE=America/Caracas
+      
+      # --- Performance Configuration ---
+      - N8N_GRACEFUL_SHUTDOWN_TIMEOUT=30
+      - N8N_NODE_OPTIONS=--max-old-space-size=3200
+      
+      # --- Environment Configuration ---
+      - NODE_ENV=production
+      - NODE_FUNCTION_ALLOW_EXTERNAL=moment,lodash,moment-with-locales
+      
+      # ========================================
+      # ✅ N8N v2.0+ NUEVAS CONFIGURACIONES
+      # ========================================
+      
+      # --- Task Runners ---
+      - N8N_RUNNERS_ENABLED=true  # ✅ NUEVO
+      - N8N_RUNNERS_MODE=internal  # ✅ NUEVO
+      
+      # --- Corporate Proxy Configuration ---
+      - NODE_EXTRA_CA_CERTS=/etc/ssl/certs/banesco.crt
+      - HTTP_PROXY=http://10.132.222.73:9090
+      - HTTPS_PROXY=http://10.132.222.73:9090
+      - NO_PROXY=localhost,127.0.0.1,postgres,redis,redis_n8n_redis,10.132.212.4,10.132.212.5,.intra.banesco.com,ss11.aiworkflow.intra.banesco.com,ss10.aiworkflow.intra.banesco.com
+      
+    volumes:
+      - n8n_data:/home/node/.n8n
+      - /mnt/data/traefik/certs/banesco.crt:/etc/ssl/certs/banesco.crt:ro
+    healthcheck:
+      test: ["CMD-SHELL", "node -e \"require('http').request('http://localhost:5678/healthz', (res) => { res.statusCode === 200 ? process.exit(0) : process.exit(1); }).on('error', (err) => process.exit(1)).end()\""]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    secrets:
+      - n8n_db_password
+      - n8n_encryption_key
+    deploy:
+      mode: replicated
+      replicas: 3
+      placement:
+        constraints:
+          - node.role == manager
+      resources:
+        limits:
+          cpus: '8'
+          memory: 4096M
+    networks:
+      - agent_network
+
+volumes:
+  n8n_data:
+    external: true
+
+networks:
+  traefik_public:
+    external: true
+  agent_network:
+    external: true
+
+secrets:
+  n8n_db_password:
+    external: true
+  n8n_encryption_key:
+    external: true
