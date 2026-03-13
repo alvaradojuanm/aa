@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test CORS - Extractor Documentos</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: #0f172a; color: #e2e8f0; min-height: 100vh; padding: 2rem; }
+        .container { max-width: 700px; margin: 0 auto; }
+        h1 { font-size: 1.5rem; margin-bottom: 0.5rem; color: #38bdf8; }
+        .subtitle { color: #94a3b8; margin-bottom: 2rem; font-size: 0.9rem; }
+        .card { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; }
+        .card h2 { font-size: 1.1rem; margin-bottom: 1rem; color: #f1f5f9; }
+        label { display: block; font-size: 0.85rem; color: #94a3b8; margin-bottom: 0.4rem; }
+        select, input[type="text"] { width: 100%; padding: 0.6rem 0.8rem; background: #0f172a; border: 1px solid #475569; border-radius: 8px; color: #e2e8f0; font-size: 0.9rem; margin-bottom: 1rem; }
+        input[type="file"] { margin-bottom: 1rem; }
+        button { padding: 0.6rem 1.4rem; border: none; border-radius: 8px; font-size: 0.9rem; font-weight: 600; cursor: pointer; margin-right: 0.5rem; margin-bottom: 0.5rem; }
+        .btn-post { background: #22c55e; color: #0f172a; }
+        .btn-post:hover { background: #4ade80; }
+        .status { display: inline-block; padding: 0.15rem 0.6rem; border-radius: 20px; font-size: 0.8rem; font-weight: 700; }
+        .status-ok { background: #166534; color: #4ade80; }
+        .status-err { background: #7f1d1d; color: #fca5a5; }
+        .status-pending { background: #1e3a5f; color: #7dd3fc; }
+        pre { background: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 1rem; overflow-x: auto; font-size: 0.82rem; line-height: 1.5; white-space: pre-wrap; word-break: break-word; max-height: 500px; overflow-y: auto; }
+        .response-box { margin-top: 1rem; display: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Test API — Extractor de Documentos</h1>
+        <p class="subtitle">Prueba directa contra Cloud Run (sin API Gateway)</p>
+
+        <div class="card">
+            <h2>Configuracion</h2>
+            <label>Base URL (Cloud Run)</label>
+            <input type="text" id="baseUrl" value="https://api-doc-1019028806090.us-central1.run.app">
+            
+            <label>Endpoint</label>
+            <select id="endpoint">
+                <option value="/v1/extract/cedula">/v1/extract/cedula</option>
+                <option value="/v1/extract/rif">/v1/extract/rif</option>
+                <option value="/v1/extract/generico">/v1/extract/generico</option>
+            </select>
+
+            <label>Archivo (imagen de cedula, RIF o documento)</label>
+            <input type="file" id="fileInput" accept="image/*,.pdf">
+        </div>
+
+        <div class="card">
+            <h2>Prueba</h2>
+            <button class="btn-post" onclick="testPost()">Enviar Documento (POST)</button>
+
+            <div class="response-box" id="responseBox">
+                <h3 style="margin-bottom:0.5rem;">
+                    Respuesta: <span class="status" id="statusBadge">...</span>
+                </h3>
+                <pre id="responseOutput"></pre>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function testPost() {
+            const base = document.getElementById('baseUrl').value;
+            const endpoint = document.getElementById('endpoint').value;
+            const url = base + endpoint;
+            const fileInput = document.getElementById('fileInput');
+            const box = document.getElementById('responseBox');
+            const badge = document.getElementById('statusBadge');
+            const output = document.getElementById('responseOutput');
+
+            if (!fileInput.files.length) {
+                alert('Selecciona un archivo primero');
+                return;
+            }
+
+            box.style.display = 'block';
+            badge.textContent = 'enviando...';
+            badge.className = 'status status-pending';
+            output.textContent = 'Procesando documento con IA...';
+
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+
+            try {
+                const resp = await fetch(url, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const isOk = resp.status >= 200 && resp.status < 300;
+                badge.textContent = resp.status;
+                badge.className = `status ${isOk ? 'status-ok' : 'status-err'}`;
+
+                let text = `STATUS: ${resp.status}\n\n`;
+                
+                // Mostrar headers CORS
+                text += `-- HEADERS CORS --\n`;
+                ['access-control-allow-origin', 'access-control-allow-methods', 'access-control-allow-headers'].forEach(h => {
+                    const val = resp.headers.get(h);
+                    text += `${h}: ${val || '(no presente)'}\n`;
+                });
+                text += `\n-- BODY --\n`;
+
+                const contentType = resp.headers.get('content-type') || '';
+                if (contentType.includes('application/json')) {
+                    const data = await resp.json();
+                    text += JSON.stringify(data, null, 2);
+                } else {
+                    text += await resp.text();
+                }
+                output.textContent = text;
+            } catch (err) {
+                badge.textContent = 'ERROR';
+                badge.className = 'status status-err';
+                output.textContent = `Error: ${err.message}\n\nSi ves "Failed to fetch", el preflight CORS fallo.\nAbre F12 > Network para ver detalles.`;
+            }
+        }
+    </script>
+</body>
+</html>
