@@ -1,0 +1,646 @@
+{
+  "name": "Whatsapp_Business_Api (Crude)",
+  "nodes": [
+    {
+      "parameters": {
+        "phoneNumberId": "884468351419331",
+        "template": "codigo_descuento|es",
+        "components": {
+          "component": [
+            {
+              "bodyParameters": {
+                "parameter": [
+                  {
+                    "text": "Julio"
+                  }
+                ]
+              }
+            },
+            {
+              "type": "button",
+              "sub_type": "quick_reply",
+              "index": 0,
+              "buttonParameters": {}
+            },
+            {
+              "type": "header",
+              "headerParameters": {
+                "parameter": [
+                  {
+                    "type": "image"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        -336,
+        368
+      ],
+      "id": "fd2a5929-6cf0-4d80-b851-9b389d26d1dd",
+      "name": "Send template",
+      "webhookId": "89198082-231e-46ca-948d-f7c21533fb06",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "cQ7jgPUlDHc7CQfQ",
+          "name": "COMPARTIR"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## HTTP Request (Send message)",
+        "height": 256,
+        "width": 544,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -416,
+        -240
+      ],
+      "typeVersion": 1,
+      "id": "a5e2d50f-e072-44a7-827d-8049d6f6bbf3",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## Webhooks (Trigger - Activación)",
+        "height": 240,
+        "width": 544,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -416,
+        32
+      ],
+      "typeVersion": 1,
+      "id": "b720c099-5a1f-4f32-89b4-ce31bc58a8c6",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## Templates (Plantillas)",
+        "height": 272,
+        "width": 544,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -416,
+        288
+      ],
+      "typeVersion": 1,
+      "id": "487a4f7a-1795-423c-bb44-5e4044e3b6bf",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $json.query['hub.challenge'] }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -80,
+        112
+      ],
+      "id": "965070f6-c1d6-46a0-8db8-4e88f8a1da74",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "path": "PATH",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -352,
+        112
+      ],
+      "id": "5be78d96-3f23-4c51-884b-06197829721e",
+      "name": "Webhook",
+      "webhookId": "7a059d5d-b92f-4f17-8d1c-e3c70c06d2da"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "PATH",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        240,
+        112
+      ],
+      "id": "f89c041c-7575-4a19-91c5-e2db241b3472",
+      "name": "Webhook1",
+      "webhookId": "34b8cf29-7e70-4050-92c5-028fcde5adb4"
+    },
+    {
+      "parameters": {
+        "content": "## Webhooks (Trigger)",
+        "height": 240,
+        "width": 320,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        144,
+        32
+      ],
+      "typeVersion": 1,
+      "id": "5699c67f-6b12-46f8-8e3f-f13c389edad2",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "content": "## Activar 2FA (Prod)",
+        "height": 256,
+        "width": 320,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        144,
+        -240
+      ],
+      "typeVersion": 1,
+      "id": "3cf7fb0b-c0c5-46c9-ac58-bdba4966b8e6",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://graph.facebook.com/v24.0/<TU ID>/register",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer <TU TOKEN>"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "messaging_product",
+              "value": "whatsapp"
+            },
+            {
+              "name": "pin",
+              "value": "123456"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        240,
+        -176
+      ],
+      "id": "577e6ca6-9d91-4359-997b-650df275aebb",
+      "name": "HTTP Request (2FA)"
+    },
+    {
+      "parameters": {
+        "content": "##  Send message (Prod)",
+        "height": 256,
+        "width": 320,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        480,
+        -240
+      ],
+      "typeVersion": 1,
+      "id": "1bd776e9-c127-4fe3-81d3-8c717c8babe3",
+      "name": "Sticky Note6"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://graph.facebook.com/v24.0/<TU ID>/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer <TU TOKEN>"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"messaging_product\": \"whatsapp\",\n  \"recipient_type\": \"individual\",\n  \"to\": \"<TU NUMERO>\",\n  \"type\": \"interactive\",\n  \"interactive\": {\n    \"type\": \"cta_url\",\n    \"header\": {\n      \"type\": \"image\",\n      \"image\": {\n        \"link\": \"{{LINK_AQUI}}\"\n      }\n    },\n    \"body\": {\n      \"text\": \"🥰¡Gracias por confiar en nosotros!\\n¡Aquí tienes un *CÓDIGO DE DESCUENTO DEL 10%* para tu próxima compra!\\nN8N Automations\"\n    },\n    \"action\": {\n      \"name\": \"cta_url\",\n      \"parameters\": {\n        \"display_text\": \"Usar descuento\",\n        \"url\": \"https://clinik-ia.com/\"\n      }\n    }\n  }\n}",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        576,
+        -176
+      ],
+      "id": "e6cfc9b7-6951-403e-9836-be1c6f59ce90",
+      "name": "HTTP Request (Message 2)"
+    },
+    {
+      "parameters": {
+        "content": "## Ejemplo",
+        "height": 240,
+        "width": 1232,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -416,
+        576
+      ],
+      "typeVersion": 1,
+      "id": "4d124218-cd39-4614-9081-ebd01bc3da4a",
+      "name": "Sticky Note7"
+    },
+    {
+      "parameters": {
+        "updates": [
+          "messages"
+        ],
+        "options": {}
+      },
+      "type": "n8n-nodes-base.whatsAppTrigger",
+      "typeVersion": 1,
+      "position": [
+        -352,
+        640
+      ],
+      "id": "545e3b23-f2b0-411e-ab01-55d5b0daff41",
+      "name": "WhatsApp Trigger1",
+      "webhookId": "7e986250-bfb3-4142-a16d-2b51d6ac9a91",
+      "credentials": {
+        "whatsAppTriggerApi": {
+          "id": "BfTkLZesIldlmOjb",
+          "name": "COMPARTIR"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 3
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        96,
+        640
+      ],
+      "id": "e0b479ac-aa3b-4402-8ba2-587b8c7ab585",
+      "name": "Wait",
+      "webhookId": "bca8f800-5667-4d28-9ff7-23a9028db6f2"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://graph.facebook.com/v24.0/<TU ID>/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer <TU TOKEN>"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"messaging_product\": \"whatsapp\",\n  \"recipient_type\": \"individual\",\n  \"to\": \"{{ $('WhatsApp Trigger1').item.json.messages[0].from }}\",\n  \"type\": \"interactive\",\n  \"interactive\": {\n    \"type\": \"button\",\n    \"header\": {\n      \"type\": \"image\",\n      \"image\": {\n        \"link\": \"{{LINK_AQUI}}\"\n      }\n    },\n    \"body\": {\n      \"text\": \"Hola! 😉 Somos una empresa de fabricación de velas aromáticas.\\n\\n¿Qué necesitas?\"\n    },\n    \"footer\": {\n      \"text\": \"N8N Automations\"\n    },\n    \"action\": {\n      \"buttons\": [\n        {\n          \"type\": \"reply\",\n          \"reply\": {\n            \"id\": \"como_funciona\",\n            \"title\": \"Cómo funciona\"\n          }\n        },\n        {\n          \"type\": \"reply\",\n          \"reply\": {\n            \"id\": \"crear_pedido\",\n            \"title\": \"Crear pedido\"\n          }\n        }\n      ]\n    }\n  }\n}",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        544,
+        640
+      ],
+      "id": "36bb224b-2a4d-4c5c-a27c-949840148ae0",
+      "name": "Botones Interactivos"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://graph.facebook.com/v24.0/<TU ID>/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer <TU TOKEN>"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"messaging_product\": \"whatsapp\",\n  \"status\": \"read\",\n  \"message_id\": \"{{ $json.messages[0].id }}\",\n  \"typing_indicator\": {\n    \"type\": \"text\"\n  }\n}",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -128,
+        640
+      ],
+      "id": "786fa4e3-130c-44eb-a60a-b425e14e5731",
+      "name": "Tick Azul + Escribiendo"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://graph.facebook.com/v24.0/<TU ID>/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer <TU TOKEN>"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"messaging_product\": \"whatsapp\",\n    \"to\": \"<TU NUMERO>\",\n    \"type\": \"template\",\n    \"template\": {\n      \"name\": \"codigo_descuento\",\n      \"language\": { \"code\": \"es\" },\n      \"components\": [\n        {\n          \"type\": \"header\",\n          \"parameters\": [\n            {\n              \"type\": \"image\",\n              \"image\": {\n                \"link\": \"{{LINK_AQUI}}\"\n              }\n            }\n          ]\n        },\n        {\n          \"type\": \"button\",\n          \"sub_type\": \"COPY_CODE\",\n          \"index\": 0,\n          \"parameters\": [\n            {\n              \"type\": \"coupon_code\",\n              \"coupon_code\": \"AUTOMATIONS10\"\n            }\n          ]\n        }\n      ]\n    }\n  }",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -96,
+        368
+      ],
+      "id": "37b3d1b2-7e07-4126-982b-12f824814941",
+      "name": "HTTP Request (Plantilla)"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://graph.facebook.com/v22.0/<TU_ID>/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer <TU TOKEN>"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"messaging_product\": \"whatsapp\",\n  \"to\": \"34634534662\",\n  \"type\": \"template\",\n  \"template\": {\n    \"name\": \"jaspers_market_plain_text_v1\",\n    \"language\": {\n      \"code\": \"en_US\"\n    }\n  }\n}",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -64,
+        -176
+      ],
+      "id": "db17561c-ae7b-43a1-a17c-7f552c41ef0b",
+      "name": "HTTP Request (Message 1)"
+    },
+    {
+      "parameters": {
+        "content": "## Whatsapp nodes",
+        "height": 240,
+        "width": 544,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -416,
+        -496
+      ],
+      "typeVersion": 1,
+      "id": "52600d7d-e25b-40e8-8739-e76155efc6b8",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "updates": [
+          "messages"
+        ],
+        "options": {}
+      },
+      "type": "n8n-nodes-base.whatsAppTrigger",
+      "typeVersion": 1,
+      "position": [
+        -352,
+        -432
+      ],
+      "id": "e49b8e34-bed7-4785-beac-5303c0a5b295",
+      "name": "WhatsApp Trigger",
+      "webhookId": "b6b0cc58-c71b-4e8b-99ff-4a8ea179bf70",
+      "credentials": {
+        "whatsAppTriggerApi": {
+          "id": "BfTkLZesIldlmOjb",
+          "name": "COMPARTIR"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "884468351419331",
+        "recipientPhoneNumber": "=",
+        "textBody": "Hola",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        -64,
+        -432
+      ],
+      "id": "6d2fe22e-ba30-4d79-b9f4-ede3ecde6d89",
+      "name": "Send message",
+      "webhookId": "d94f0e4b-8226-402e-ba2e-921fce1a01e6",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "cQ7jgPUlDHc7CQfQ",
+          "name": "COMPARTIR"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://graph.facebook.com/v24.0/<TU ID>/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer <TU TOKEN>"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"messaging_product\": \"whatsapp\",\n  \"to\": \"{{ $('WhatsApp Trigger1').item.json.contacts[0].wa_id }}\",\n  \"type\": \"reaction\",\n  \"reaction\": {\n    \"message_id\": \"{{ $('WhatsApp Trigger1').item.json.messages[0].id }}\",\n    \"emoji\": \"🧡\"\n  }\n}\n",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        320,
+        640
+      ],
+      "id": "17442e98-655a-4a0c-bc97-7522d392c1c2",
+      "name": "Mensaje de Reaccion"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook1": {
+      "main": [
+        []
+      ]
+    },
+    "WhatsApp Trigger1": {
+      "main": [
+        [
+          {
+            "node": "Tick Azul + Escribiendo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Mensaje de Reaccion",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Botones Interactivos": {
+      "main": [
+        []
+      ]
+    },
+    "Tick Azul + Escribiendo": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WhatsApp Trigger": {
+      "main": [
+        [
+          {
+            "node": "Send message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mensaje de Reaccion": {
+      "main": [
+        [
+          {
+            "node": "Botones Interactivos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "830cdf6d-3f79-4e73-b1bb-81d4313b3b30",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "bdd2a04e77dd118a7dac7a64df1cb3a17ddff619bff6ac9dfb38fce2334b9cf7"
+  },
+  "id": "U2CNOYMAxshXGN7C",
+  "tags": []
+}
