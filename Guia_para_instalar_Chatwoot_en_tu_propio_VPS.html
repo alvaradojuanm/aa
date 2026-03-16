@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía de Instalación de Chatwoot v4.1.0</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+        
+        h1 {
+            color: #1f2937;
+            border-bottom: 3px solid #3b82f6;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+            font-size: 2em;
+        }
+        
+        h2 {
+            color: #1f2937;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            border-left: 4px solid #3b82f6;
+            padding-left: 15px;
+        }
+        
+        h3 {
+            color: #374151;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+        
+        p, li {
+            margin-bottom: 10px;
+        }
+        
+        ul, ol {
+            margin-left: 20px;
+            margin-bottom: 20px;
+        }
+        
+        code {
+            background: #f3f4f6;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            color: #dc2626;
+        }
+        
+        pre {
+            background: #1f2937;
+            color: #f9fafb;
+            padding: 20px;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin: 20px 0;
+            border-left: 4px solid #3b82f6;
+        }
+        
+        pre code {
+            background: none;
+            color: #f9fafb;
+            padding: 0;
+        }
+        
+        pre.add {
+            border-left: 4px solid #10b981;
+            background: #1a2e1a;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #e5e7eb;
+        }
+        
+        th {
+            background: #f3f4f6;
+            font-weight: 600;
+            color: #1f2937;
+        }
+        
+        tr:nth-child(even) {
+            background: #f9fafb;
+        }
+        
+        .note {
+            background: #dbeafe;
+            border-left: 4px solid #3b82f6;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        .warning {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        .success {
+            background: #d1fae5;
+            border-left: 4px solid #10b981;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        hr {
+            border: none;
+            border-top: 1px solid #e5e7eb;
+            margin: 30px 0;
+        }
+        
+        .print-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        
+        .print-button:hover {
+            background: #2563eb;
+        }
+        
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            .container {
+                box-shadow: none;
+                padding: 20px;
+            }
+            .print-button {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="print-button" onclick="window.print()">🖨️ Imprimir / Guardar PDF</button>
+    
+    <div class="container">
+        <h1>🚀 Guía de Instalación de Chatwoot v4.1.0 con Docker y Traefik</h1>
+        
+        <h2>📋 Requisitos Previos</h2>
+        <ul>
+            <li>VPS con Ubuntu 24.04 LTS (Hostinger o similar)</li>
+            <li>Docker y Docker Compose instalados</li>
+            <li>n8n y Traefik ya configurados y funcionando</li>
+            <li>Mínimo 4GB RAM y 50GB disco</li>
+        </ul>
+
+        <hr>
+
+        <h2>Paso 1: Crear la Red Externa</h2>
+        <p>Esta red permite que Traefik, n8n y Chatwoot se comuniquen. Al ser <strong>externa</strong>, no se destruye cuando actualizas servicios.</p>
+        <pre><code>docker network create traefik_network</code></pre>
+        <div class="note">
+            <strong>Nota:</strong> Si ya existe, verás un error que puedes ignorar.
+        </div>
+
+        <hr>
+
+        <h2>Paso 2: Modificar el archivo de Traefik y n8n</h2>
+        <p>Abre tu archivo:</p>
+        <pre><code>nano ~/docker-compose.yml</code></pre>
+        
+        <p>Realiza estos 4 cambios:</p>
+
+        <h3>2.1 En la sección <code>command</code> de Traefik, añade esta línea:</h3>
+        <pre class="add"><code>      - "--providers.docker.network=traefik_network"</code></pre>
+
+        <h3>2.2 Al final del servicio <code>traefik</code>, añade:</h3>
+        <pre class="add"><code>    networks:
+      - traefik_network</code></pre>
+
+        <h3>2.3 Al final del servicio <code>n8n</code>, añade:</h3>
+        <pre class="add"><code>    networks:
+      - traefik_network</code></pre>
+
+        <h3>2.4 Al final del archivo, después de <code>volumes</code>, añade:</h3>
+        <pre class="add"><code>networks:
+  traefik_network:
+    external: true</code></pre>
+
+        <p>Guarda: <code>Ctrl + O</code>, <code>Enter</code>, <code>Ctrl + X</code></p>
+
+        <hr>
+
+        <h2>Paso 3: Reiniciar Traefik y n8n</h2>
+        <pre><code>cd ~
+docker compose down
+docker compose up -d</code></pre>
+
+        <p>Verifica que funcionan:</p>
+        <pre><code>docker ps</code></pre>
+        <p>Deberías ver <code>root-traefik-1</code> y <code>root-n8n-1</code> en estado <strong>Up</strong>.</p>
+
+        <hr>
+
+        <h2>Paso 4: Crear la carpeta de Chatwoot</h2>
+        <pre><code>mkdir ~/chatwoot</code></pre>
+
+        <hr>
+
+        <h2>Paso 5: Crear el archivo .env de Chatwoot</h2>
+        <pre><code>nano ~/chatwoot/.env</code></pre>
+        
+        <p>Pega el siguiente contenido:</p>
+        <pre><code># Dominio donde accederás a Chatwoot
+FRONTEND_URL=https://chatwoot.TU_DOMINIO
+
+# Entorno de producción
+RAILS_ENV=production
+
+# Permitir crear cuentas desde la URL
+ENABLE_ACCOUNT_SIGNUP=true
+
+# Claves secretas (GENERA NUEVAS - ver abajo)
+SECRET_KEY_BASE=PEGA_AQUI_TU_CLAVE_64
+POSTGRES_PASSWORD=PEGA_AQUI_TU_CLAVE_32
+
+# Base de datos PostgreSQL
+POSTGRES_HOST=postgres
+POSTGRES_PORT=5432
+POSTGRES_DATABASE=chatwoot_production
+POSTGRES_USERNAME=chatwoot
+
+# Redis
+REDIS_URL=redis://redis:6379
+
+# Almacenamiento local (para archivos, audios, imÃ¡genes)
+ACTIVE_STORAGE_SERVICE=local</code></pre>
+
+        <p>Guarda: <code>Ctrl + O</code>, <code>Enter</code>, <code>Ctrl + X</code></p>
+
+        <div class="warning">
+            <strong>⚠️ Genera claves secretas únicas:</strong>
+            <pre><code>openssl rand -hex 64</code></pre>
+            <p>Copia el resultado y pégalo en <code>SECRET_KEY_BASE</code></p>
+            <pre><code>openssl rand -hex 32</code></pre>
+            <p>Copia el resultado y pégalo en <code>POSTGRES_PASSWORD</code></p>
+        </div>
+
+        <hr>
+
+        <h2>Paso 6: Crear el docker-compose.yml de Chatwoot</h2>
+        <pre><code>nano ~/chatwoot/docker-compose.yml</code></pre>
+        
+        <p>Pega el siguiente contenido (cambia <code>TU_DOMINIO</code>):</p>
+        <pre><code>services:
+  postgres:
+    image: ankane/pgvector
+    restart: always
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=${POSTGRES_USERNAME}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DATABASE}
+
+  redis:
+    image: redis:7-alpine
+    restart: always
+    volumes:
+      - redis_data:/data
+
+  chatwoot:
+    image: chatwoot/chatwoot:v4.1.0
+    restart: always
+    depends_on:
+      - postgres
+      - redis
+    env_file:
+      - .env
+    volumes:
+      - chatwoot_storage:/app/storage
+    command: bundle exec rails s -p 3000 -b 0.0.0.0
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.chatwoot.rule=Host(`chatwoot.TU_DOMINIO`)
+      - traefik.http.routers.chatwoot.tls=true
+      - traefik.http.routers.chatwoot.entrypoints=websecure
+      - traefik.http.routers.chatwoot.tls.certresolver=mytlschallenge
+      - traefik.http.services.chatwoot.loadbalancer.server.port=3000
+    networks:
+      - default
+      - traefik_network
+
+  sidekiq:
+    image: chatwoot/chatwoot:v4.1.0
+    restart: always
+    depends_on:
+      - postgres
+      - redis
+    env_file:
+      - .env
+    volumes:
+      - chatwoot_storage:/app/storage
+    command: bundle exec sidekiq -C config/sidekiq.yml
+
+volumes:
+  postgres_data:
+  redis_data:
+  chatwoot_storage:
+
+networks:
+  traefik_network:
+    external: true</code></pre>
+
+        <p>Guarda: <code>Ctrl + O</code>, <code>Enter</code>, <code>Ctrl + X</code></p>
+
+        <div class="note">
+            <strong>💾 Almacenamiento persistente:</strong> Los volúmenes <code>chatwoot_storage</code> garantizan que los archivos (audios, imágenes, documentos) enviados en las conversaciones se guarden permanentemente, incluso si reinicias o actualizas los contenedores. La variable <code>ACTIVE_STORAGE_SERVICE=local</code> le indica a Rails que use el sistema de archivos local en lugar de servicios en la nube como S3.
+        </div>
+
+        <hr>
+
+        <h2>Paso 7: Levantar Chatwoot</h2>
+        <pre><code>cd ~/chatwoot
+docker compose up -d</code></pre>
+
+        <p>Espera 30 segundos:</p>
+        <pre><code>sleep 30</code></pre>
+
+        <p>Verifica que estén corriendo:</p>
+        <pre><code>docker compose ps</code></pre>
+
+        <p>Deberías ver 4 contenedores en estado <strong>Up</strong>:</p>
+        <ul>
+            <li><code>chatwoot-postgres-1</code></li>
+            <li><code>chatwoot-redis-1</code></li>
+            <li><code>chatwoot-chatwoot-1</code></li>
+            <li><code>chatwoot-sidekiq-1</code></li>
+        </ul>
+
+        <hr>
+
+        <h2>Paso 8: Configurar la Base de Datos</h2>
+        
+        <p>Ejecuta estos comandos en orden (desde <code>~/chatwoot</code>):</p>
+        
+        <h3>8.1 Crear la base de datos</h3>
+        <pre><code>docker compose run --rm chatwoot bundle exec rails db:create</code></pre>
+
+        <h3>8.2 Ejecutar las migraciones</h3>
+        <pre><code>docker compose run --rm chatwoot bundle exec rails db:migrate</code></pre>
+        <p><em>Este proceso puede tardar 2-3 minutos.</em></p>
+
+        <h3>8.3 Cargar datos iniciales</h3>
+        <pre><code>docker compose run --rm chatwoot bundle exec rails db:seed</code></pre>
+
+        <hr>
+
+        <h2>Paso 9: Verificar la conexión de red</h2>
+        <pre><code>docker network inspect traefik_network --format '{{range .Containers}}{{.Name}} {{end}}'</code></pre>
+        <p>Deberías ver: <code>root-traefik-1</code>, <code>root-n8n-1</code> y <code>chatwoot-chatwoot-1</code></p>
+
+        <hr>
+
+        <h2>Paso 10: Acceder a Chatwoot</h2>
+        <p>Abre tu navegador y ve a:</p>
+        <div class="success">
+            <strong>🌐 https://chatwoot.tudominio.com</strong>
+        </div>
+
+        <h3>Crear tu cuenta</h3>
+        <ol>
+            <li>Haz clic en <strong>"Create a new account"</strong></li>
+            <li>Completa: nombre, email y contraseña</li>
+            <li>Haz clic en <strong>"Create account"</strong></li>
+        </ol>
+
+        <hr>
+
+        <h2>🛠️ Gestión y Actualizaciones</h2>
+
+        <div class="success">
+            <strong>✅ Ventaja de la red externa:</strong> Puedes actualizar n8n, Traefik o Chatwoot de forma independiente sin que se desconecten entre sí.
+        </div>
+
+        <h3>Actualizar n8n y Traefik</h3>
+        <pre><code>cd ~
+docker compose pull
+docker compose down
+docker compose up -d</code></pre>
+        <p>Chatwoot seguirá funcionando.</p>
+
+        <h3>Actualizar Chatwoot</h3>
+        <pre><code>cd ~/chatwoot
+nano docker-compose.yml
+# Cambiar la versión: image: chatwoot/chatwoot:v4.X.X
+
+docker compose pull
+docker compose down
+docker compose up -d
+sleep 30
+docker compose run --rm chatwoot bundle exec rails db:migrate</code></pre>
+
+        <h3>Ver logs</h3>
+        <pre><code># Logs de Chatwoot
+cd ~/chatwoot
+docker compose logs chatwoot -f
+
+# Logs de n8n
+cd ~
+docker compose logs n8n -f</code></pre>
+
+        <hr>
+
+        <h2>🔒 Seguridad Post-Instalación</h2>
+        <p>Desactiva el registro público después de crear tu cuenta:</p>
+        <pre><code>nano ~/chatwoot/.env
+# Cambiar: ENABLE_ACCOUNT_SIGNUP=false
+
+cd ~/chatwoot
+docker compose restart chatwoot</code></pre>
+
+        <hr>
+
+        <h2>🗑️ Desinstalar Chatwoot</h2>
+
+        <h3>Opción 1: Mantener datos</h3>
+        <pre><code>cd ~/chatwoot
+docker compose down</code></pre>
+
+        <h3>Opción 2: Eliminar todo</h3>
+        <pre><code>cd ~/chatwoot
+docker compose down -v
+cd ~
+rm -rf ~/chatwoot</code></pre>
+
+        <hr>
+
+        <h2>📝 Resumen de Cambios en ~/docker-compose.yml</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Dónde</th>
+                    <th>Qué añadir</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>En <code>command</code> de traefik</td>
+                    <td><code>- "--providers.docker.network=traefik_network"</code></td>
+                </tr>
+                <tr>
+                    <td>Al final de traefik</td>
+                    <td><code>networks:<br>&nbsp;&nbsp;- traefik_network</code></td>
+                </tr>
+                <tr>
+                    <td>Al final de n8n</td>
+                    <td><code>networks:<br>&nbsp;&nbsp;- traefik_network</code></td>
+                </tr>
+                <tr>
+                    <td>Al final del archivo</td>
+                    <td><code>networks:<br>&nbsp;&nbsp;traefik_network:<br>&nbsp;&nbsp;&nbsp;&nbsp;external: true</code></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="success">
+            <strong>🎉 ¡Instalación completada!</strong>
+            <p>Documentación oficial: <a href="https://www.chatwoot.com/docs" target="_blank">https://www.chatwoot.com/docs</a></p>
+        </div>
+    </div>
+</body>
+</html>

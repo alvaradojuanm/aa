@@ -1,0 +1,770 @@
+{
+  "name": "Chatwoot (Limpio)",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.mensaje_usuario }}",
+        "options": {
+          "systemMessage": "=# Prompt — Asistente Virtual Clínica Hogwarts\n\n## Contexto Temporal\n\nFecha actual: {{ $now.toISO() }}\n\n---\n\n## Variables de Entrada\n\nNombre del usuario: {{ $('Webhook').item.json.body.conversation.messages[0].sender.name }}\n\nMensaje del cliente: {{ $json.mensaje_usuario }}\n\n---\n\n## Objetivo Principal\n\nEres el asistente virtual de la Clínica Hogwarts.\n\nTu objetivo es:\n\n- Responder consultas generales de los pacientes.\n- Gestionar la agenda de citas.\n- Cancelar citas cuando sea solicitado.\n- Derivar la conversación a un agente humano cuando sea necesario o solicitado.\n\nSiempre prioriza una atención clara, rápida y profesional.\n\n---\n\n## Herramientas Disponibles\n\nPuedes utilizar las siguientes herramientas:\n\n- **info_negocio** → Obtener información oficial de la clínica.\n- **ver_disponibilidad** → Consultar disponibilidad de agenda.\n- **agendar_cita** → Crear nuevas citas.\n- **cancelar_cita** → Cancelar citas existentes.\n- **desactivar_bot** → Derivar la conversación a un agente humano.\n\n---\n\n## Horario de Atención de la Clínica\n\nLa Clínica Hogwarts atiende exclusivamente en el siguiente horario:\n\n- De 09:00 a 20:00\n\nReglas obligatorias:\n\n- No permitas agendar citas fuera de este horario.\n- Si el usuario solicita una hora fuera del horario, ofrece alternativas válidas dentro del rango permitido.\n- Todas las citas deben comenzar y terminar dentro del horario laboral.\n\n---\n\n## Duración de Citas\n\nTodas las citas tienen una duración FIJA de: 30 minutos.\n\nNo calcules duraciones dinámicas.\n\n---\n\n## Reglas Generales de Comportamiento\n\n- Mantén un tono amable, profesional y cercano.\n- Usa emojis con moderación.\n- No inventes información.\n- No muestres datos técnicos ni internos.\n- No menciones el nombre de las herramientas.\n- No muestres IDs, enlaces internos o datos del sistema.\n- Mantén las respuestas claras, cortas y fáciles de entender.\n\n---\n\n## Flujo Principal de Atención\n\n---\n\n### 1. Consultas Generales\n\nSi el usuario pregunta sobre:\n\n- Horarios\n- Servicios\n- Precios\n- Ubicación\n- Información general\n\nConsulta la herramienta **info_negocio** y responde únicamente usando información oficial.\n\n---\n\n### 2. Solicitud de Cita\n\nSi el usuario desea agendar una cita, sigue este flujo:\n\n---\n\n#### Paso 1 — Recopilar información necesaria\n\nSolicita los siguientes datos de forma ordenada (uno por uno):\n\n1. Servicio deseado.\n2. Día preferido para la cita.\n3. Preferencia horaria (mañana o tarde).\n\nNo solicites todos los datos en un solo mensaje.\n\n---\n\n#### Paso 2 — Consultar disponibilidad\n\nCuando tengas el día solicitado:\n\n- Consulta disponibilidad con **ver_disponibilidad**.\n- Ofrece al cliente DOS horarios disponibles dentro del día solicitado.\n\nEjemplo:\n\nTenemos disponibilidad a las 10:00 o a las 16:00.  \n¿Cuál prefieres?\n\n---\n\n#### Paso 3 — Crear cita\n\nCuando el cliente confirme el horario:\n\n- Agenda la cita usando **agendar_cita**.\n- Usa duración fija de 30 minutos.\n\n---\n\n#### Paso 4 — Confirmación de cita\n\nConfirma la cita con el cliente usando este formato amigable:\n\nEjemplo:\n\n¡Tu cita ha sido agendada exitosamente, {{ $('Webhook').item.json.body.conversation.messages[0].sender.name }}! 🎉  \n\n - *Detalles de la cita:*  \n - *Servicio:* Consulta general\n - *Fecha:* 9 de febrero  \n - *Hora:* 10:00  \n\nSi necesitas modificar o cancelar tu cita solo dime.\n\n¡Te esperamos!\n\n---\n\n### 3. Cancelación de Citas\n\nSi el usuario solicita cancelar una cita:\n\n- Cancela usando **cancelar_cita**.\n- Confirma al cliente.\n\nEjemplo:\n\nTu cita ha sido cancelada correctamente 😊  \nSi deseas agendar una nueva cita estaré encantado de ayudarte.\n\n---\n\n### 4. Derivar a Agente Humano\n\nSi el usuario escribe mensajes como:\n\n- quiero hablar con un humano  \n- agente  \n- persona real  \n- atención humana  \n\nEntonces:\n\n- Ejecuta **desactivar_bot**.\n- Responde al usuario:\n\nEjemplo:\n\nPerfecto 😊  \nTe voy a pasar con un agente humano para que te ayude personalmente.\n\n---\n\n## Manejo de Casos Especiales\n\n---\n\n### Mensajes Poco Claros o Fuera de Contexto\n\nSi el mensaje del usuario no es claro:\n\nSolicita aclaración de forma educada.\n\nEjemplo:\n\n¿Podrías explicarme un poco mejor en qué puedo ayudarte? 😊\n\n---\n\n## Estilo de conversación\n\n- Mensajes cortos.\n- Frases naturales.\n- No párrafos largos.\n- Usa emojis solo cuando encajen 😊\n- Puedes usar:\n  - *negrita* para destacar\n  - _cursiva_ para énfasis suave\n\n---\n\n## Restricciones Importantes\n\n- No proporciones enlaces internos.\n- No muestres información del sistema.\n- No hagas suposiciones médicas.\n- No prometas diagnósticos ni tratamientos médicos.\n\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        464,
+        496
+      ],
+      "id": "de123f49-6000-48a6-b5e1-738ddad99cbf",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-5-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        256,
+        736
+      ],
+      "id": "56aa5305-7668-4f05-9890-3645f87e538d",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "NgGiYlgeq7p8pAVn",
+          "name": "N8N_VPS"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Webhook').item.json.body.conversation.id }}",
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        432,
+        736
+      ],
+      "id": "5849bdda-a8a5-443e-b6f0-f570c48bbbc8",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "7deed758-5a55-4083-a34c-6fb05d17e046",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -608,
+        448
+      ],
+      "id": "6dc7927a-3128-4b6b-a014-263c2d6f91fb",
+      "name": "Webhook",
+      "webhookId": "7deed758-5a55-4083-a34c-6fb05d17e046"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://app.chatwoot.com/api/v1/accounts/{{ $('Webhook').item.json.body.account.id }}/conversations/{{ $('Webhook').item.json.body.conversation.id }}/messages",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "content",
+              "value": "={{ $json.output }}"
+            },
+            {
+              "name": "message_type",
+              "value": "outgoing"
+            },
+            {
+              "name": "private",
+              "value": "false"
+            },
+            {
+              "name": "content_type",
+              "value": "text"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        832,
+        496
+      ],
+      "id": "0a1cdc3f-54cf-496b-a988-86d198bbb2ec",
+      "name": "Responder_Mensaje"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.body.conversation.messages[0].attachments[0] }}",
+                    "rightValue": "=null",
+                    "operator": {
+                      "type": "string",
+                      "operation": "notExists",
+                      "singleValue": true
+                    },
+                    "id": "6ded9cbb-3486-4503-ba6b-dd611bdbc914"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "TEXTO"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "e3660426-c7db-480b-9b07-58b4b5ca7bf2",
+                    "leftValue": "={{ $json.body.conversation.messages[0].attachments[0].file_type }}",
+                    "rightValue": "audio",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "AUDIO"
+            }
+          ]
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -160,
+        512
+      ],
+      "id": "d1cccca6-9124-47f8-b636-3428c26420bd",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.body.conversation.messages[0].attachments[0].data_url }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        16,
+        576
+      ],
+      "id": "2d152380-08bf-4761-a344-c693b0b078d2",
+      "name": "Descargar_Audio",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "Vw849CZDwTyqaDgN",
+          "name": "WhatsApp (OLD)"
+        },
+        "httpHeaderAuth": {
+          "id": "UUVLTuIjJU1vptlh",
+          "name": "Chatwoot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "operation": "transcribe",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        16,
+        384
+      ],
+      "id": "f18efa9f-e13a-48f7-b3de-287b7d79e1dd",
+      "name": "Transcribir",
+      "credentials": {
+        "openAiApi": {
+          "id": "XgzxhuF0XzDK7lVl",
+          "name": "COMPARTIR"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1a495720-f954-4fb3-9791-d7ce7bddaacc",
+              "name": "mensaje_usuario",
+              "value": "={{$json.text || $json.body.content }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        256,
+        496
+      ],
+      "id": "9be07aae-0fd3-4f03-9b47-4b6f9707bd4f",
+      "name": "Filtro_mensaje"
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "",
+          "mode": "id"
+        },
+        "start": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Start', ``, 'string') }}",
+        "end": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('End', ``, 'string') }}",
+        "additionalFields": {
+          "summary": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Summary', `Nombre + Tratamiento`, 'string') }}"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        736,
+        736
+      ],
+      "id": "827529fa-c94c-4b45-8455-2b37d357e048",
+      "name": "agendar_cita",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "1zQqBwpHyNrNRdXM",
+          "name": "COMPARTIR"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Calendar', ``, 'string') }}",
+          "mode": "id",
+          "__regex": "(^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*)"
+        },
+        "start": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Start', ``, 'string') }}",
+        "end": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('End', ``, 'string') }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        880,
+        736
+      ],
+      "id": "5073fbbd-5241-4e38-9fed-327574168931",
+      "name": "cancelar_cita",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "1zQqBwpHyNrNRdXM",
+          "name": "COMPARTIR"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get"
+      },
+      "type": "n8n-nodes-base.googleDocsTool",
+      "typeVersion": 2,
+      "position": [
+        448,
+        320
+      ],
+      "id": "591a8cb1-5fcf-4369-bc13-2c59a35c6c3f",
+      "name": "info_negocio",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "peVH7PYa7L0odIs4",
+          "name": "COMPARTIR"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://app.chatwoot.com/api/v1/accounts/148861/conversations/{{ $('Webhook').item.json.body.conversation.id }}/custom_attributes",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"custom_attributes\": {\n    \"desactivar_bot\": \"true\"\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.3,
+      "position": [
+        624,
+        320
+      ],
+      "id": "46cc8c3f-67be-47c0-bba6-e70d409bc0a3",
+      "name": "desactivar_bot"
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Consulta los eventos que hay agendado en una franja horaria de un día determinado. Si no hay ningún evento puede agendar cita sin problema, si hay un o más eventos, solo podrá agendralos en horario que no coincidan.",
+        "resource": "calendar",
+        "calendar": {
+          "__rl": true,
+          "value": "",
+          "mode": "id"
+        },
+        "timeMin": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('After', ``, 'string') }}",
+        "timeMax": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Before', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        592,
+        736
+      ],
+      "id": "93992a31-cc6e-40d6-8c57-3c605068aca2",
+      "name": "ver_disponibilidad",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "1zQqBwpHyNrNRdXM",
+          "name": "COMPARTIR"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Agente conectado a Chatwoot",
+        "height": 672,
+        "width": 1824,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -704,
+        240
+      ],
+      "typeVersion": 1,
+      "id": "16cc12f6-7d5b-4b66-a491-f28e7a33f971",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "b64dd9c8-27be-4668-afb4-cea0f358bbac",
+              "leftValue": "={{ $json.body.conversation.custom_attributes.desactivar_bot }}",
+              "rightValue": false,
+              "operator": {
+                "type": "boolean",
+                "operation": "false",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -368,
+        656
+      ],
+      "id": "d8fc52b4-3460-425f-b519-6aa807e12887",
+      "name": "Revisa si tiene etiqueta"
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "884468351419331",
+        "recipientPhoneNumber": "1",
+        "textBody": "1",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        -368,
+        80
+      ],
+      "id": "e3fe610d-ea9b-4be3-bd4e-77d57cffaa92",
+      "name": "Send message",
+      "webhookId": "d3478420-0884-4b6b-986a-e85c1ffe83b0",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "Vw849CZDwTyqaDgN",
+          "name": "WhatsApp (OLD)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "updates": [
+          "messages"
+        ],
+        "options": {}
+      },
+      "type": "n8n-nodes-base.whatsAppTrigger",
+      "typeVersion": 1,
+      "position": [
+        -608,
+        80
+      ],
+      "id": "f363c457-8adb-4e7d-b87b-55b0d75b4ed6",
+      "name": "WhatsApp Trigger",
+      "webhookId": "2e798c5c-84a5-423b-bec1-c81b278ea50a",
+      "credentials": {
+        "whatsAppTriggerApi": {
+          "id": "BfTkLZesIldlmOjb",
+          "name": "COMPARTIR"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        688,
+        64
+      ],
+      "id": "4f7f2d1a-f4e8-478e-b9ec-a253ec8055fc",
+      "name": "import_curl"
+    },
+    {
+      "parameters": {
+        "content": "",
+        "height": 192,
+        "width": 480,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        640,
+        32
+      ],
+      "typeVersion": 1,
+      "id": "c4aff389-fc49-4492-8eda-1f2fb54b1fda",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://app.chatwoot.com/api/v1/accounts/{{ $('Webhook').item.json.body.account.id }}/conversations/{{ $('Webhook').item.json.body.conversation.id }}/messages",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"content\": \"Plantilla de recordatorio de cita\",\n  \"template_params\": {\n    \"name\": \"recordatorio_cita\",\n    \"category\": \"UTILITY\",\n    \"language\": \"es\",\n    \"processed_params\": {\n      \"header\": {\n        \"media_type\": \"image\",\n        \"media_url\": \"https://drive.google.com/uc?export=view&id=1VncWE2XC7xUDb7H1a3ZpYs_Vqc0TlshP\"\n      },\n      \"body\": {\n        \"1\": \"Juan Pérez\",\n        \"2\": \"12/02/2026\",\n        \"3\": \"10:30\",\n        \"4\": \"Sucursal Centro\"\n      }\n    }\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        912,
+        64
+      ],
+      "id": "ce99bf93-ad50-4fb2-928d-e2e8ea1312c7",
+      "name": "Ejemplo_Plantilla",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "UUVLTuIjJU1vptlh",
+          "name": "Chatwoot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "6333b81d-9a22-47d0-95c2-b1b25ed1b294",
+              "leftValue": "={{ $json.body.message_type }}",
+              "rightValue": "incoming",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -368,
+        448
+      ],
+      "id": "f4681fd5-2d38-440f-8a44-69dd61ba7c78",
+      "name": "Outgoing/Incoming"
+    },
+    {
+      "parameters": {
+        "content": "## Incoming/Outgoing\nAñadido para solo pasar por el flujo mensajes entrantes y no salientes (evitar bucle)",
+        "height": 272,
+        "width": 272,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -448,
+        320
+      ],
+      "typeVersion": 1,
+      "id": "9ba52101-598a-4950-8a07-5db475242bc8",
+      "name": "Sticky Note2"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Responder_Mensaje",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Outgoing/Incoming",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Responder_Mensaje": {
+      "main": [
+        []
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Filtro_mensaje",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Descargar_Audio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Descargar_Audio": {
+      "main": [
+        [
+          {
+            "node": "Transcribir",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transcribir": {
+      "main": [
+        [
+          {
+            "node": "Filtro_mensaje",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filtro_mensaje": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "agendar_cita": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "cancelar_cita": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "info_negocio": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "desactivar_bot": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ver_disponibilidad": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Revisa si tiene etiqueta": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Outgoing/Incoming": {
+      "main": [
+        [
+          {
+            "node": "Revisa si tiene etiqueta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "034cfd88-b693-481f-a08d-9a021d254f5d",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "bdd2a04e77dd118a7dac7a64df1cb3a17ddff619bff6ac9dfb38fce2334b9cf7"
+  },
+  "id": "yTCeQRVVxdsh5a1i",
+  "tags": []
+}
